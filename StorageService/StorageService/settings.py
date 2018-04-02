@@ -24,7 +24,11 @@ SECRET_KEY = 'l(y)1rl8se@cm!@+22l)2^&b^lyfw@5jsnt%ja6mrjwnplg*re'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['snf-815302.vm.okeanos.grnet.gr',
+				'snf-815307.vm.okeanos.grnet.gr',
+				'snf-815301.vm.okeanos.grnet.gr',
+				'snf-815317.vm.okeanos.grnet.gr',
+				'127.0.0.1',]
 
 # Application definition
 
