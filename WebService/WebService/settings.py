@@ -23,12 +23,13 @@ SECRET_KEY = '^cca52s+#0%lv37po%fqmvdhk0r!#yvj93n742z9#=291i2p0_'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
+LOCAL = True
 
 ALLOWED_HOSTS = ['snf-815302.vm.okeanos.grnet.gr',
-				'snf-815307.vm.okeanos.grnet.gr',
-				'snf-815301.vm.okeanos.grnet.gr',
-				'snf-815317.vm.okeanos.grnet.gr',
-				'127.0.0.1',]
+                 'snf-815307.vm.okeanos.grnet.gr',
+                 'snf-815301.vm.okeanos.grnet.gr',
+                 'snf-815317.vm.okeanos.grnet.gr',
+                 '127.0.0.1', ]
 
 # Application definition
 
@@ -39,6 +40,8 @@ INSTALLED_APPS = [
 	'django.contrib.sessions',
 	'django.contrib.messages',
 	'django.contrib.staticfiles',
+	'testApp',
+	'App',
 ]
 
 MIDDLEWARE = [
@@ -117,3 +120,15 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
 
 STATIC_URL = '/static/'
+
+
+if LOCAL:
+	WEB_SERVICE_URL = "http://127.0.0.1:8000/"
+	APPLICATION_SERVICE_URL = "http://127.0.0.1:8001/"
+	AUTH_SERVICE_URL = "http://127.0.0.1:8002/"
+	STORAGE_SERVICE_URL = "http://127.0.0.1:8003/"
+else:
+	WEB_SERVICE_URL = "http://snf-815302.vm.okeanos.grnet.gr/"
+	APPLICATION_SERVICE_URL = "http://snf-815307.vm.okeanos.grnet.gr/"
+	AUTH_SERVICE_URL = "http://snf-815301.vm.okeanos.grnet.gr/"
+	STORAGE_SERVICE_URL = "http://snf-815317.vm.okeanos.grnet.gr/"
