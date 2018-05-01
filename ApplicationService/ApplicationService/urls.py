@@ -21,5 +21,7 @@ from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include(('testApp.urls', 'testApp'), namespace='testApp')),
+    # path('', include(('testApp.urls', 'testApp'), namespace='testApp')),
+    # path('', include(('App.urls', 'App'), namespace='App')),
 ]
+from App.zoo import zk

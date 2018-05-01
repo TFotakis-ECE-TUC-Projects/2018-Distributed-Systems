@@ -121,14 +121,14 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-
-if LOCAL:
-	WEB_SERVICE_URL = "http://127.0.0.1:8000/"
-	APPLICATION_SERVICE_URL = "http://127.0.0.1:8001/"
-	AUTH_SERVICE_URL = "http://127.0.0.1:8002/"
-	STORAGE_SERVICE_URL = "http://127.0.0.1:8003/"
-else:
-	WEB_SERVICE_URL = "http://snf-815302.vm.okeanos.grnet.gr/"
-	APPLICATION_SERVICE_URL = "http://snf-815307.vm.okeanos.grnet.gr/"
-	AUTH_SERVICE_URL = "http://snf-815301.vm.okeanos.grnet.gr/"
-	STORAGE_SERVICE_URL = "http://snf-815317.vm.okeanos.grnet.gr/"
+# ZooKeeper Configuration
+ZOOKEEPER_NODE_ID = 'ApplicationService'
+ZOOKEEPER_HOST = 'snf-815301.vm.okeanos.grnet.gr'
+ZOOKEEPER_USER = 'username'
+ZOOKEEPER_PASSWORD = 'password'
+ZOOKEEPER_ROOT = '/TUClery/'
+ZOOKEEPER_NODE_EPHIMERAL = False
+SERVER_HOSTNAME = 'snf-815307.vm.okeanos.grnet.gr'
+SERVER_PORT = '8000'
+SERVER_SCHEME = 'http'
+CONTEXT = 'ApplicationService'
