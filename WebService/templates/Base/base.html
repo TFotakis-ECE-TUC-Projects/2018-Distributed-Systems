@@ -1,0 +1,27 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	{% include 'Base/HeadMeta.html' %}
+	{% include 'Base/HeadLinks.html' %}
+</head>
+<body>
+<div class="loader-bg">
+	<div class="loader">
+		<div></div>
+		<div></div>
+	</div>
+</div>
+
+{% include 'Base/NavigationBar.html' %}
+{#<div style="min-height: 100vh;">#}
+{% block body %}{% endblock %}
+{#</div>#}
+{#{% include 'Base/Footer.html' %}#}
+</body>
+<script type="text/javascript">
+	$(window).on('load', function () {
+		$(".loader-bg").fadeOut('slow');
+	});
+</script>
+</html>

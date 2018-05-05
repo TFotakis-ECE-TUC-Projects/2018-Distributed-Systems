@@ -13,6 +13,8 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
+from django.http import HttpRequest
+
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # Quick-start development settings - unsuitable for production
@@ -23,7 +25,6 @@ SECRET_KEY = '^cca52s+#0%lv37po%fqmvdhk0r!#yvj93n742z9#=291i2p0_'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-LOCAL = True
 
 ALLOWED_HOSTS = ['snf-815302.vm.okeanos.grnet.gr',
                  'snf-815307.vm.okeanos.grnet.gr',
@@ -40,7 +41,7 @@ INSTALLED_APPS = [
 	'django.contrib.sessions',
 	'django.contrib.messages',
 	'django.contrib.staticfiles',
-	'testApp',
+	'RestAPI',
 	'App',
 ]
 
@@ -119,8 +120,11 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
 
+# STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 STATIC_URL = '/static/'
-
+STATICFILES_DIRS = (
+	os.path.join(BASE_DIR, 'static'),
+)
 # ZooKeeper Configuration
 ZOOKEEPER_NODE_ID = 'WebService'
 ZOOKEEPER_HOST = 'snf-815301.vm.okeanos.grnet.gr'
