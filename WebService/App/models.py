@@ -38,8 +38,10 @@ class GalleryComment(models.Model):
 
 class Photo(models.Model):
 	Gallery = models.ForeignKey(Gallery, on_delete=models.CASCADE, default=1)
-	UploadDateTime = models.DateTimeField(default=None, blank=True, null=True)
+	UploadDateTime = models.DateTimeField(auto_now_add=True, null=True)
 	UUID = models.CharField(max_length=1024)
+	Location = models.CharField(default='', blank=True, null=True, max_length=100)
+	Description = models.CharField(default='', blank=True, null=True, max_length=1024)
 
 	def __str__(self): return str(self.Gallery) + " - " + self.UUID
 
@@ -47,7 +49,12 @@ class Photo(models.Model):
 class PhotoComment(models.Model):
 	User = models.ForeignKey(User, on_delete=models.CASCADE, default=1)
 	Photo = models.ForeignKey(Photo, on_delete=models.CASCADE, default=1)
-	UploadDateTime = models.DateTimeField(default=None, null=True)
+	UploadDateTime = models.DateTimeField(auto_now_add=True, null=True)
 	Text = models.CharField(max_length=1024)
 
 	def __str__(self): return str(self.Photo) + " - " + str(self.UploadDateTime)
+
+
+class Like(models.Model):
+	User = models.ForeignKey(User, on_delete=models.CASCADE, default=1)
+	Photo = models.ForeignKey(Photo, on_delete=models.CASCADE, default=1)

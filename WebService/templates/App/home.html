@@ -2,7 +2,13 @@
 {% block title %}{% endblock %}
 {% block body %}
 	<div class="navbar-placeholder"></div>
-	{% include 'Shared/photoCard.html' %}
-	{% include 'Shared/photoCard.html' %}
-	<div class="navbar-placeholder"></div>
+	<div class="container">
+		<ul>
+			{% for user in users %}
+				<li>
+					<a href="{% url 'App:profile' user.id %}">{{ user.FullName }}</a>
+				</li>
+			{% endfor %}
+		</ul>
+	</div>
 {% endblock %}

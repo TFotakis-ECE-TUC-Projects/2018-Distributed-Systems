@@ -1,0 +1,16 @@
+{% extends 'Base/base.html' %}
+{% block title %}{% endblock %}
+{% block body %}
+	<div class="navbar-placeholder"></div>
+	{#	<div class="container mb-2">#}
+	{#		<div class="col-4">#}
+	{#			<div class="custom-file">#}
+	{#				<input type="file" class="custom-file-input" id="customFile">#}
+	{#				<label class="custom-file-label" for="customFile">Choose photo</label>#}
+	{#			</div>#}
+	{#		</div>#}
+	{#	</div>#}
+	{% for photo in gallery.photo_set.all|dictsort:'UploadDateTime' %}
+		{% include 'Shared/photoCard.html' %}
+	{% endfor %}
+{% endblock %}

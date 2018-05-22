@@ -1,0 +1,22 @@
+{% extends 'Base/base.html' %}
+{% block title %}Upload photo - {% endblock %}
+{% block body %}
+	<div class="navbar-placeholder"></div>
+	<div class="container">
+		<div class="col-4 offset-4">
+			<form action="{% url 'RestAPI:uploadPhoto' %}" method="post" enctype="multipart/form-data">
+				{% csrf_token %}
+				<select name="galleryId" class="custom-select mb-2">
+					<option selected>Select a gallery</option>
+					{% for gallery in galleries %}
+						<option value="{{ gallery.id }}">{{ gallery.Name }}</option>
+					{% endfor %}
+				</select>
+				<input type="file" name="photoFile" class="file-upload mb-2">
+				<input type="text" name="Description" class="form-control mb-2" aria-label="Description…" placeholder="Description…">
+				<input type="text" name="Location" class="form-control mb-2" aria-label="Location…" placeholder="Location…">
+				<button class="btn mx-auto w-100"><i class="fas fa-upload text-center"></i></button>
+			</form>
+		</div>
+	</div>
+{% endblock %}
