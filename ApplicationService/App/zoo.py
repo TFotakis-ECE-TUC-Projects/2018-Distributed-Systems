@@ -24,7 +24,7 @@ class Zooconf:
 	def __publishService(self):
 		acl = make_digest_acl(settings.ZOOKEEPER_USER, settings.ZOOKEEPER_PASSWORD, all=True)
 		dataJsonDict = {
-			'SERVER_HOSTNAME': settings.ZOOKEEPER_HOST,
+			'SERVER_HOSTNAME': settings.SERVER_HOSTNAME,
 			'SERVER_PORT': settings.SERVER_PORT,
 			'CHILDREN': []
 		}
@@ -65,18 +65,18 @@ class Zooconf:
 
 	def getZooConnection(self): return self.__zkcon
 
-	def getStatusText(self):
-		result = "{\n"
+	def getStatus(self):
+		result = "{"
 		try:
 			rootChildren = self.__zkcon.get_children(settings.ZOOKEEPER_ROOT)
 			for child in rootChildren:
 				data, stat = self.__zkcon.get(settings.ZOOKEEPER_ROOT + child)
-				result += '\t"' + child + '": ' + data.decode("utf-8") + "\n"
+				result += '"' + child + '": ' + data.decode("utf-8") + ","
 				try:
 					grandchildren = self.__zkcon.get_children(settings.ZOOKEEPER_ROOT + child)
 					for grandchild in grandchildren:
 						data, stat = self.__zkcon.get(settings.ZOOKEEPER_ROOT + child + '/' + grandchild)
-						result += '\t"' + grandchild + '": ' + data.decode("utf-8") + "\n"
+						result += '"' + grandchild + '": ' + data.decode("utf-8") + ","
 					data, stat = self.__zkcon.get(settings.ZOOKEEPER_ROOT + child + '/')
 					dataJsonDict = json.loads(data.decode("utf-8"))
 					dataJsonDict['CHILDREN'] = grandchildren
@@ -86,17 +86,24 @@ class Zooconf:
 					)
 				except Exception:
 					pass
-			return result + '}'
+			result = result[:-1] + '}'
+			return json.loads(result)
 		except Exception:
 			self.__zooConnect()
-			return self.getStatusText()
+			return self.getStatus()
 
+	def getNodeData(self, node):
+		status = self.getStatus()
+		try:
+			return status[node]
+		except Exception:
+			return {}
 
-def printit():
-	threading.Timer(300.0, printit).start()
-	print("Heartbeat")
-	print(zk.getStatusText())
+	def heartbeat(self):
+		threading.Timer(300.0, self.heartbeat).start()
+		print("Heartbeat")
+		print(str(self.getStatus()))
 
 
 zk = Zooconf()
-printit()
+zk.heartbeat()
