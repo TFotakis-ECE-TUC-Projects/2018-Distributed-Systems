@@ -44,3 +44,13 @@ def uploadPhoto(request):
 	response = requests.post(requestUrl, data={'csrfmiddlewaretoken': request.POST['csrfmiddlewaretoken']}, files={'photoFile': photoFile})
 
 	return redirect('App:gallery', id=galleryId)
+
+
+def makeFriendship(request, userId, friendId):
+	Friendship.objects.create(User_id=userId, Friend_id=friendId)
+	return redirect('App:listOfUsers')
+
+
+def deleteFriendship(request, userId, friendId):
+	Friendship.objects.filter(User_id=userId, Friend_id=friendId).delete()
+	return redirect('App:listOfUsers')

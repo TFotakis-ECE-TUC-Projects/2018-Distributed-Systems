@@ -29,3 +29,14 @@ def uploadPhotoView(request, ownerId):
 		'galleries': Gallery.objects.filter(Owner=ownerId).all()
 	}
 	return render(request=request, template_name="App/uploadPhoto.html", context=context)
+
+
+def listOfUsers(request):
+	# Todo: change user id from being hardcoded
+	userId = 1
+	knownUsers = Friendship.objects.filter(User_id=userId)
+	excludeList = knownUsers.values_list('Friend_id', flat=True)
+	unknownUsers = User.objects.exclude(id=userId).exclude(id__in=excludeList)
+	context = {'unknownUsers': unknownUsers, 'knownUsers': knownUsers}
+
+	return render(request, template_name="App/userList.html", context=context)
