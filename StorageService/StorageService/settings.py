@@ -25,10 +25,10 @@ SECRET_KEY = 'l(y)1rl8se@cm!@+22l)2^&b^lyfw@5jsnt%ja6mrjwnplg*re'
 DEBUG = True
 
 ALLOWED_HOSTS = ['snf-815302.vm.okeanos.grnet.gr',
-				'snf-815307.vm.okeanos.grnet.gr',
-				'snf-815301.vm.okeanos.grnet.gr',
-				'snf-815317.vm.okeanos.grnet.gr',
-				'127.0.0.1',]
+                 'snf-815307.vm.okeanos.grnet.gr',
+                 'snf-815301.vm.okeanos.grnet.gr',
+                 'snf-815317.vm.okeanos.grnet.gr',
+                 '127.0.0.1', ]
 
 # Application definition
 
@@ -39,6 +39,7 @@ INSTALLED_APPS = [
 	'django.contrib.sessions',
 	'django.contrib.messages',
 	'django.contrib.staticfiles',
+	'App',
 ]
 
 MIDDLEWARE = [
@@ -105,7 +106,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Europe/Athens'
 
 USE_I18N = True
 
@@ -117,3 +118,14 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
 
 STATIC_URL = '/static/'
+
+# ZooKeeper Configuration
+ZOOKEEPER_NODE_ID = 'StorageService1'
+ZOOKEEPER_HOST = 'snf-815301.vm.okeanos.grnet.gr'
+ZOOKEEPER_USER = 'username'
+ZOOKEEPER_PASSWORD = 'password'
+ZOOKEEPER_ROOT = '/TUClery/'
+ZOOKEEPER_PATH_TO_NODE = 'StorageServices/'
+ZOOKEEPER_NODE_EPHIMERAL = True
+SERVER_HOSTNAME = 'snf-815317.vm.okeanos.grnet.gr'
+SERVER_PORT = '8000'

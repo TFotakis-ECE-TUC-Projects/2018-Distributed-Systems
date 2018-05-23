@@ -1,4 +1,8 @@
+import json
+import requests
 from django.db import models
+
+from WebService.zoo import zk
 
 
 class User(models.Model):
@@ -44,6 +48,15 @@ class Photo(models.Model):
 	Description = models.CharField(default='', blank=True, null=True, max_length=1024)
 
 	def __str__(self): return str(self.Gallery) + " - " + self.UUID
+
+	@property
+	def url(self):
+		applicationServiceData = zk.getNodeData('ApplicationService')
+		applicationServiceUrl = applicationServiceData['SERVER_HOSTNAME'] + ':' + applicationServiceData['SERVER_PORT']
+		requestUrl = applicationServiceUrl + '/getStorageService/' + self.UUID + '/'
+		response = requests.get(requestUrl)
+		content = json.loads(response.content)
+		return content['storageService'] + '/' + self.UUID
 
 
 class PhotoComment(models.Model):

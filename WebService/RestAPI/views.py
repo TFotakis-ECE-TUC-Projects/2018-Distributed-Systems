@@ -37,4 +37,10 @@ def uploadPhoto(request):
 	location = request.POST['Location']
 	photoFile = request.FILES['photoFile']
 	Photo.objects.create(Gallery_id=galleryId, UUID=photoFile.name, Description=description, Location=location)
+
+	applicationServiceData = zk.getNodeData('ApplicationService')
+	applicationServiceUrl = applicationServiceData['SERVER_HOSTNAME'] + ':' + applicationServiceData['SERVER_PORT']
+	requestUrl = applicationServiceUrl + '/uploadPhoto/'
+	response = requests.post(requestUrl, data={'csrfmiddlewaretoken': request.POST['csrfmiddlewaretoken']}, files={'photoFile': photoFile})
+
 	return redirect('App:gallery', id=galleryId)

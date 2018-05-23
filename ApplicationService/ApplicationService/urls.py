@@ -15,12 +15,11 @@ Including another URLconf
 """
 # Used to initialize ZooKeeper Connections
 # noinspection PyUnresolvedReferences
-from WebService.zoo import zk
+from ApplicationService.zoo import zk
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
 
 urlpatterns = [
 	path('admin/', admin.site.urls),
-	# path('', include(('testApp.urls', 'testApp'), namespace='testApp')),
-	# path('', include(('App.urls', 'App'), namespace='App')),
+	path('', include(('App.urls', 'App'), namespace='App'))
 ]

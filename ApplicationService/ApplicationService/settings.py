@@ -23,7 +23,6 @@ SECRET_KEY = '_a+@xprl4bg*)xraf4dr9#f#2(hxd-2ud2*yu2d0+zjg_!!#n('
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-LOCAL = True
 
 ALLOWED_HOSTS = ['snf-815302.vm.okeanos.grnet.gr',
                  'snf-815307.vm.okeanos.grnet.gr',
@@ -40,7 +39,6 @@ INSTALLED_APPS = [
 	'django.contrib.sessions',
 	'django.contrib.messages',
 	'django.contrib.staticfiles',
-	'testApp',
 	'App',
 ]
 
@@ -108,7 +106,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Europe/Athens'
 
 USE_I18N = True
 
@@ -130,4 +128,6 @@ ZOOKEEPER_ROOT = '/TUClery/'
 ZOOKEEPER_PATH_TO_NODE = ''
 ZOOKEEPER_NODE_EPHIMERAL = False
 SERVER_HOSTNAME = 'snf-815307.vm.okeanos.grnet.gr'
+SERVER_HOSTNAME = 'http://127.0.0.1'
 SERVER_PORT = '8000'
+SERVER_PORT = '8001'
