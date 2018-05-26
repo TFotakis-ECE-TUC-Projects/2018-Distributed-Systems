@@ -15,15 +15,13 @@ def nodeStatusView(request, node):
 
 def getStorageService(request, uuid):
 	photos = Photo.objects.filter(UUID=uuid).all()
-	storageServices = zk.getNodeData('StorageServices')['CHILDREN']
-	storageService = ''
-	for storageService in storageServices:
-		selectedStorageService = photos.filter(StorageService=storageService)
+	storageService = {'url': ""}
+	for storageService in zk.storageServicesList:
+		selectedStorageService = photos.filter(StorageService=storageService['name'])
 		if selectedStorageService is not None:
 			break
-	storageServiceData = zk.getNodeData(storageService)
 	context = {
-		'storageService': storageServiceData['SERVER_HOSTNAME'] + ':' + storageServiceData['SERVER_PORT']
+		'storageService': storageService['url']
 	}
 	return JsonResponse(context)
 

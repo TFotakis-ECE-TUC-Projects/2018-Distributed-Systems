@@ -13,11 +13,12 @@ class Zooconf:
 	authenticationServiceList = None
 	status = None
 
-	def __init__(self):
+	def initialize(self):
 		self.__zooConnect()
 		self.__publishService()
 		self.__initAuthenticationServiceWatches()
 		self.__initStorageServiceWatches()
+		self.heartbeat()
 
 	def __zooConnect(self):
 		print("Connecting to ZooKeeper")
@@ -151,4 +152,3 @@ class Zooconf:
 
 
 zk = Zooconf()
-zk.heartbeat()

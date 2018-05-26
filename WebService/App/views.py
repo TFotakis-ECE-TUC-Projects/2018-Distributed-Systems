@@ -18,8 +18,6 @@ def profileView(request, id):
 
 def galleryView(request, id):
 	gallery = Gallery.objects.get(id=id)
-	photo = gallery.photo_set.all().first()
-	comments = photo.photocomment_set.all()
 	context = {'gallery': gallery}
 	return render(request=request, template_name="App/gallery.html", context=context)
 

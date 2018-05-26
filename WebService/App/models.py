@@ -56,8 +56,7 @@ class Photo(models.Model):
 		requestUrl = applicationServiceUrl + '/getStorageService/' + self.UUID + '/'
 		response = requests.get(requestUrl)
 		content = json.loads(response.content)
-		return content['storageService'] + '/getImage/' + self.UUID + '/'
-		# return 'http://127.0.0.1:8002/getImage/happiness.jpg/'
+		return content['storageService'] + 'getImage/' + self.UUID + '/'
 
 
 class PhotoComment(models.Model):
