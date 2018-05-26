@@ -56,28 +56,36 @@ class Zooconf:
 			)
 
 	def __initStorageServiceWatches(self):
-		# lists are supposed to be thread safe in python
 		self.storageServicesList = []
 
-		# Called immediately, and from then on
 		@self.connection.ChildrenWatch(settings.ZOOKEEPER_ROOT + "StorageServices")
 		def watch_children(children):
 			self.storageServicesList = []
-			print("Children are now: %s" % children)
-			for child in children:
-				self.storageServicesList.append(child)
+			print("Storage children are now: %s" % children)
+			for storageService in children:
+				storageServiceData = self.getNodeData(storageService)
+				if storageServiceData != {}:
+					storageServiceDict = {
+						'name': storageService,
+						'url': storageServiceData['SERVER_HOSTNAME'] + ':' + storageServiceData['SERVER_PORT'] + '/'
+					}
+					self.storageServicesList.append(storageServiceDict)
 
 	def __initAuthenticationServiceWatches(self):
-		# lists are supposed to be thread safe in python
 		self.authenticationServiceList = []
 
-		# Called immediately, and from then on
 		@self.connection.ChildrenWatch(settings.ZOOKEEPER_ROOT + "Auth")
 		def watch_children(children):
 			self.authenticationServiceList = []
-			print("Children are now: %s" % children)
-			for child in children:
-				self.authenticationServiceList.append(child)
+			print("Auth children are now: %s" % children)
+			for authService in children:
+				authServiceData = self.getNodeData(authService)
+				if authServiceData != {}:
+					authServiceDict = {
+						'name': authService,
+						'url': authServiceData['SERVER_HOSTNAME'] + ':' + authServiceData['SERVER_PORT'] + '/'
+					}
+					self.storageServicesList.append(authServiceDict)
 
 	def getAvailableFs(self): return self.storageServicesList
 
