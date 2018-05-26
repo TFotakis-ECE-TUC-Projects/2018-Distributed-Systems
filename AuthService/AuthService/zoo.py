@@ -61,6 +61,14 @@ class Zooconf:
 		@self.connection.ChildrenWatch(settings.ZOOKEEPER_ROOT + "StorageServices")
 		def watch_children(children):
 			print(self.readTree())
+			if settings.ZOOKEEPER_PATH_TO_NODE == "StorageServices/":
+				node = {
+					'SERVER_HOSTNAME': settings.SERVER_HOSTNAME,
+					'SERVER_PORT': settings.SERVER_PORT,
+					'CHILDREN': []
+				}
+				if node not in self.storageServicesList:
+					self.__publishService()
 
 	def __initAuthenticationServiceWatches(self):
 		self.authenticationServiceList = []
@@ -68,6 +76,14 @@ class Zooconf:
 		@self.connection.ChildrenWatch(settings.ZOOKEEPER_ROOT + "Auth")
 		def watch_children(children):
 			print(self.readTree())
+			if settings.ZOOKEEPER_PATH_TO_NODE == "Auth/":
+				node = {
+					'SERVER_HOSTNAME': settings.SERVER_HOSTNAME,
+					'SERVER_PORT': settings.SERVER_PORT,
+					'CHILDREN': []
+				}
+				if node not in self.authenticationServiceList:
+					self.__publishService()
 
 	def getAvailableFs(self): return self.storageServicesList
 
