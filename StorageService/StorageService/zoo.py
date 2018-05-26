@@ -60,62 +60,47 @@ class Zooconf:
 
 		@self.connection.ChildrenWatch(settings.ZOOKEEPER_ROOT + "StorageServices")
 		def watch_children(children):
-			self.storageServicesList = []
-			print("Storage children are now: %s" % children)
-			for storageService in children:
-				storageServiceData = self.getNodeData(storageService)
-				if storageServiceData != {}:
-					storageServiceDict = {
-						'name': storageService,
-						'url': storageServiceData['SERVER_HOSTNAME'] + ':' + storageServiceData['SERVER_PORT'] + '/'
-					}
-					self.storageServicesList.append(storageServiceDict)
+			print(self.readTree())
 
 	def __initAuthenticationServiceWatches(self):
 		self.authenticationServiceList = []
 
 		@self.connection.ChildrenWatch(settings.ZOOKEEPER_ROOT + "Auth")
 		def watch_children(children):
-			self.authenticationServiceList = []
-			print("Auth children are now: %s" % children)
-			for authService in children:
-				authServiceData = self.getNodeData(authService)
-				if authServiceData != {}:
-					authServiceDict = {
-						'name': authService,
-						'url': authServiceData['SERVER_HOSTNAME'] + ':' + authServiceData['SERVER_PORT'] + '/'
-					}
-					self.storageServicesList.append(authServiceDict)
+			print(self.readTree())
 
 	def getAvailableFs(self): return self.storageServicesList
 
 	def getZooConnection(self): return self.connection
 
-	def getStatus(self):
+	def readTree(self):
 		result = "{"
+		rootChildren = self.connection.get_children(settings.ZOOKEEPER_ROOT)
+		for child in rootChildren:
+			data, stat = self.connection.get(settings.ZOOKEEPER_ROOT + child)
+			result += '"' + child + '": ' + data.decode("utf-8") + ","
+			try:
+				grandchildren = self.connection.get_children(settings.ZOOKEEPER_ROOT + child)
+				for grandchild in grandchildren:
+					data, stat = self.connection.get(settings.ZOOKEEPER_ROOT + child + '/' + grandchild)
+					result += '"' + grandchild + '": ' + data.decode("utf-8") + ","
+				data, stat = self.connection.get(settings.ZOOKEEPER_ROOT + child + '/')
+				dataJsonDict = json.loads(data.decode("utf-8"))
+				dataJsonDict['CHILDREN'] = grandchildren
+				self.connection.set(
+					path=settings.ZOOKEEPER_ROOT + child,
+					value=json.JSONEncoder().encode(dataJsonDict).encode()
+				)
+			except Exception:
+				pass
+		result = result[:-1] + '}'
+		self.status = json.loads(result)
+		self.initZkTree()
+		return self.status
+
+	def getStatus(self):
 		try:
-			rootChildren = self.connection.get_children(settings.ZOOKEEPER_ROOT)
-			for child in rootChildren:
-				data, stat = self.connection.get(settings.ZOOKEEPER_ROOT + child)
-				result += '"' + child + '": ' + data.decode("utf-8") + ","
-				try:
-					grandchildren = self.connection.get_children(settings.ZOOKEEPER_ROOT + child)
-					for grandchild in grandchildren:
-						data, stat = self.connection.get(settings.ZOOKEEPER_ROOT + child + '/' + grandchild)
-						result += '"' + grandchild + '": ' + data.decode("utf-8") + ","
-					data, stat = self.connection.get(settings.ZOOKEEPER_ROOT + child + '/')
-					dataJsonDict = json.loads(data.decode("utf-8"))
-					dataJsonDict['CHILDREN'] = grandchildren
-					self.connection.set(
-						path=settings.ZOOKEEPER_ROOT + child,
-						value=json.JSONEncoder().encode(dataJsonDict).encode()
-					)
-				except Exception:
-					pass
-			result = result[:-1] + '}'
-			self.status = json.loads(result)
-			self.initZkTree()
-			return self.status
+			return self.readTree()
 		except Exception:
 			self.__zooConnect()
 			return self.getStatus()
@@ -137,21 +122,23 @@ class Zooconf:
 		self.authenticationServiceList = []
 		for authService in serviceData['CHILDREN']:
 			authServiceData = self.getNodeData(authService)
-			authServiceDict = {
-				'name': authService,
-				'url': authServiceData['SERVER_HOSTNAME'] + ':' + authServiceData['SERVER_PORT'] + '/'
-			}
-			self.storageServicesList.append(authServiceDict)
+			if authServiceData != {}:
+				authServiceDict = {
+					'name': authService,
+					'url': authServiceData['SERVER_HOSTNAME'] + ':' + authServiceData['SERVER_PORT'] + '/'
+				}
+				self.authenticationServiceList.append(authServiceDict)
 
 		serviceData = self.getNodeData('StorageServices')
 		self.storageServicesList = []
 		for storageService in serviceData['CHILDREN']:
 			storageServiceData = self.getNodeData(storageService)
-			storageServiceDict = {
-				'name': storageService,
-				'url': storageServiceData['SERVER_HOSTNAME'] + ':' + storageServiceData['SERVER_PORT'] + '/'
-			}
-			self.storageServicesList.append(storageServiceDict)
+			if storageServiceData != {}:
+				storageServiceDict = {
+					'name': storageService,
+					'url': storageServiceData['SERVER_HOSTNAME'] + ':' + storageServiceData['SERVER_PORT'] + '/'
+				}
+				self.storageServicesList.append(storageServiceDict)
 
 	def heartbeat(self):
 		threading.Timer(300.0, self.heartbeat).start()
