@@ -119,6 +119,8 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+MEDIA_ROOT = 'media/'
+
 # ZooKeeper Configuration
 ZOOKEEPER_NODE_ID = 'StorageService1'
 ZOOKEEPER_HOST = 'snf-815301.vm.okeanos.grnet.gr'
@@ -129,3 +131,6 @@ ZOOKEEPER_PATH_TO_NODE = 'StorageServices/'
 ZOOKEEPER_NODE_EPHIMERAL = True
 SERVER_HOSTNAME = 'snf-815317.vm.okeanos.grnet.gr'
 SERVER_PORT = '8000'
+
+SERVER_HOSTNAME = 'http://127.0.0.1'
+SERVER_PORT = '8002'

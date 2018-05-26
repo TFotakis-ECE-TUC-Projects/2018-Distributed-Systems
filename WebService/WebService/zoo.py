@@ -7,13 +7,17 @@ from kazoo.security import make_digest_acl
 
 class Zooconf:
 	connection = None
+	webService = None
+	applicationService = None
 	storageServicesList = None
 	authenticationServiceList = None
+	status = None
 
 	def __init__(self):
 		self.__zooConnect()
 		self.__publishService()
-		self.__initFsWatches()
+		self.__initAuthenticationServiceWatches()
+		self.__initStorageServiceWatches()
 
 	def __zooConnect(self):
 		print("Connecting to ZooKeeper")
@@ -50,17 +54,29 @@ class Zooconf:
 				value=json.JSONEncoder().encode(dataJsonDict).encode()
 			)
 
-	def __initFsWatches(self):
+	def __initStorageServiceWatches(self):
 		# lists are supposed to be thread safe in python
 		self.storageServicesList = []
 
 		# Called immediately, and from then on
-		@self.connection.ChildrenWatch(settings.ZOOKEEPER_ROOT + "fileservices")
+		@self.connection.ChildrenWatch(settings.ZOOKEEPER_ROOT + "StorageServices")
 		def watch_children(children):
 			self.storageServicesList = []
 			print("Children are now: %s" % children)
 			for child in children:
 				self.storageServicesList.append(child)
+
+	def __initAuthenticationServiceWatches(self):
+		# lists are supposed to be thread safe in python
+		self.authenticationServiceList = []
+
+		# Called immediately, and from then on
+		@self.connection.ChildrenWatch(settings.ZOOKEEPER_ROOT + "Auth")
+		def watch_children(children):
+			self.authenticationServiceList = []
+			print("Children are now: %s" % children)
+			for child in children:
+				self.authenticationServiceList.append(child)
 
 	def getAvailableFs(self): return self.storageServicesList
 
@@ -88,20 +104,45 @@ class Zooconf:
 				except Exception:
 					pass
 			result = result[:-1] + '}'
-			return json.loads(result)
+			self.status = json.loads(result)
+			self.initZkTree()
+			return self.status
 		except Exception:
 			self.__zooConnect()
 			return self.getStatus()
 
 	def getNodeData(self, node):
-		status = self.getStatus()
 		try:
-			return status[node]
+			return self.status[node]
 		except Exception:
 			return {}
 
 	def initZkTree(self):
-		return
+		serviceData = self.getNodeData('WebService')
+		self.webService = serviceData['SERVER_HOSTNAME'] + ':' + serviceData['SERVER_PORT'] + '/'
+
+		serviceData = self.getNodeData('ApplicationService')
+		self.applicationService = serviceData['SERVER_HOSTNAME'] + ':' + serviceData['SERVER_PORT'] + '/'
+
+		serviceData = self.getNodeData('Auth')
+		self.authenticationServiceList = []
+		for authService in serviceData['CHILDREN']:
+			authServiceData = self.getNodeData(authService)
+			authServiceDict = {
+				'name': authService,
+				'url': authServiceData['SERVER_HOSTNAME'] + ':' + authServiceData['SERVER_PORT'] + '/'
+			}
+			self.storageServicesList.append(authServiceDict)
+
+		serviceData = self.getNodeData('StorageServices')
+		self.storageServicesList = []
+		for storageService in serviceData['CHILDREN']:
+			storageServiceData = self.getNodeData(storageService)
+			storageServiceDict = {
+				'name': storageService,
+				'url': storageServiceData['SERVER_HOSTNAME'] + ':' + storageServiceData['SERVER_PORT'] + '/'
+			}
+			self.storageServicesList.append(storageServiceDict)
 
 	def heartbeat(self):
 		threading.Timer(300.0, self.heartbeat).start()

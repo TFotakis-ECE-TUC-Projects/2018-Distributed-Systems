@@ -40,6 +40,7 @@ INSTALLED_APPS = [
 	'django.contrib.messages',
 	'django.contrib.staticfiles',
 	'App',
+	'RestAPI',
 ]
 
 MIDDLEWARE = [
@@ -106,7 +107,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Europe/Athens'
 
 USE_I18N = True
 
@@ -118,6 +119,9 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
 
 STATIC_URL = '/static/'
+STATICFILES_DIRS = (
+	os.path.join(BASE_DIR, 'static'),
+)
 
 # ZooKeeper Configuration
 ZOOKEEPER_NODE_ID = 'Auth1'
@@ -128,4 +132,7 @@ ZOOKEEPER_ROOT = '/TUClery/'
 ZOOKEEPER_PATH_TO_NODE = 'Auth/'
 ZOOKEEPER_NODE_EPHIMERAL = True
 SERVER_HOSTNAME = 'snf-815302.vm.okeanos.grnet.gr'
+# Todo: Fix SERVER_HOSTNAME and SERVER_PORT
+SERVER_HOSTNAME = '127.0.0.1'
 SERVER_PORT = '8000'
+SERVER_PORT = '8003'
