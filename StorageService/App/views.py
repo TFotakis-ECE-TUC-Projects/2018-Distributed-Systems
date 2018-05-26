@@ -1,4 +1,6 @@
-from django.http import *
+from django.core.files.storage import default_storage
+from django.http import HttpResponse, HttpResponseNotFound, JsonResponse
+from django.views.decorators.csrf import csrf_exempt
 
 from StorageService.settings import MEDIA_ROOT
 from StorageService.zoo import zk
@@ -18,3 +20,9 @@ def getImage(request, filename):
 			return HttpResponse(f.read(), content_type="image/jpeg")
 	except IOError:
 		return HttpResponseNotFound()
+
+
+@csrf_exempt
+def uploadPhoto(request):
+	path = default_storage.save(request.FILES['photoFile'].name, request.FILES['photoFile'])
+	return JsonResponse({'UUID': path})

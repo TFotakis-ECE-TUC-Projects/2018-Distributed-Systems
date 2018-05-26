@@ -1,6 +1,7 @@
+import requests
 from django.shortcuts import render, redirect
 
-from .models import *
+from .models import User, Friendship, Gallery
 
 
 def homeView(request):
@@ -47,12 +48,14 @@ def loginView(request):
 	else:
 		requests.post('http://127.0.0.1:8003/api/login', data={})
 		return redirect('App:home')
-	# user = authenticate(username=request.POST['username'], password=request.POST['password'])
-	# if user is not None:
-	# 	login(request, user)
-	# 	return redirect(request.GET.get('callback'), permanent=True)
-	# else:
-	# 	return redirect('loginView')
+
+
+# user = authenticate(username=request.POST['username'], password=request.POST['password'])
+# if user is not None:
+# 	login(request, user)
+# 	return redirect(request.GET.get('callback'), permanent=True)
+# else:
+# 	return redirect('loginView')
 
 
 def registerView(request):
@@ -61,11 +64,11 @@ def registerView(request):
 		return render(request=request, template_name="App/register.html", context=context)
 	else:
 		return redirect('App:home')
-	# User.objects.create_user(
-	# 	username=request.POST['username'],
-	# 	email=request.POST['email'],
-	# 	password=request.POST['password'],
-	# 	first_name=request.POST['name'],
-	# 	last_name=request.POST['surname']
-	# )
-	# return HttpResponse(status=200)
+# User.objects.create_user(
+# 	username=request.POST['username'],
+# 	email=request.POST['email'],
+# 	password=request.POST['password'],
+# 	first_name=request.POST['name'],
+# 	last_name=request.POST['surname']
+# )
+# return HttpResponse(status=200)

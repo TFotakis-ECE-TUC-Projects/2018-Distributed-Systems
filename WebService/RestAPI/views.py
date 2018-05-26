@@ -1,7 +1,9 @@
+import json
+import requests
 from django.http import JsonResponse, HttpResponseRedirect
 from django.shortcuts import redirect
 
-from App.models import *
+from App.models import Friendship, Photo, PhotoComment
 from WebService.zoo import zk
 
 
@@ -36,12 +38,16 @@ def uploadPhoto(request):
 	description = request.POST['Description']
 	location = request.POST['Location']
 	photoFile = request.FILES['photoFile']
-	Photo.objects.create(Gallery_id=galleryId, UUID=photoFile.name, Description=description, Location=location)
 
 	requestUrl = zk.applicationService + 'uploadPhoto/'
 	response = requests.post(requestUrl, files={'photoFile': photoFile})
 
-	return redirect('App:gallery', id=galleryId)
+	if response.ok:
+		UUID = json.loads(response.content)['UUID']
+		Photo.objects.create(Gallery_id=galleryId, UUID=UUID, Description=description, Location=location)
+		return redirect('App:gallery', id=galleryId)
+	# Todo: Replace harcoded user
+	return redirect('App:uploadPhoto', 1)
 
 
 def makeFriendship(request, userId, friendId):

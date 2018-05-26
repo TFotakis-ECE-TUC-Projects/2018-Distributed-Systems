@@ -1,7 +1,6 @@
 from django.contrib import admin
 
-# Register your models here.
-from .models import *
+from .models import User, Friendship, Gallery, GalleryComment, Photo, PhotoComment, Like
 
 admin.site.register([
 	User,

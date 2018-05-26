@@ -51,9 +51,7 @@ class Photo(models.Model):
 
 	@property
 	def url(self):
-		applicationServiceData = zk.getNodeData('ApplicationService')
-		applicationServiceUrl = applicationServiceData['SERVER_HOSTNAME'] + ':' + applicationServiceData['SERVER_PORT']
-		requestUrl = applicationServiceUrl + '/getStorageService/' + self.UUID + '/'
+		requestUrl = zk.applicationService + 'getStorageService/' + self.UUID + '/'
 		response = requests.get(requestUrl)
 		content = json.loads(response.content)
 		return content['storageService'] + 'getImage/' + self.UUID + '/'
