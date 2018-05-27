@@ -1,25 +1,47 @@
 import json
 import requests
+from django.contrib.auth.models import User
 from django.db import models
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 from WebService.zoo import zk
 
 
-class User(models.Model):
-	Name = models.CharField(max_length=100)
-	Surname = models.CharField(max_length=100)
-	Username = models.CharField(max_length=100)
-	Email = models.CharField(max_length=100)
+class Profile(models.Model):
+	User = models.OneToOneField(User, on_delete=models.CASCADE)
+	PhotoUUID = models.CharField(max_length=1024)
 
 	@property
-	def FullName(self): return self.Name + ' ' + self.Surname
+	def FullName(self): return self.User.first_name + ' ' + self.User.last_name
 
 	def __str__(self): return self.FullName
 
+	@property
+	def photoUrl(self):
+		try:
+			requestUrl = zk.applicationService + 'getStorageService/' + self.PhotoUUID + '/'
+			response = requests.get(requestUrl)
+			content = json.loads(response.content)
+			return content['storageService'] + 'getImage/' + self.PhotoUUID + '/'
+		except Exception:
+			return ""
+
+
+@receiver(post_save, sender=User)
+def create_user_profile(sender, instance, created, **kwargs):
+	if created:
+		Profile.objects.create(User=instance)
+
+
+@receiver(post_save, sender=User)
+def save_user_profile(sender, instance, **kwargs):
+	instance.profile.save()
+
 
 class Friendship(models.Model):
-	User = models.ForeignKey('User', on_delete=models.CASCADE, default=1, related_name='User')
-	Friend = models.ForeignKey('User', on_delete=models.CASCADE, default=1, related_name='Friend')
+	User = models.ForeignKey('auth.User', default=1, on_delete=models.CASCADE, related_name='User')
+	Friend = models.ForeignKey('auth.User', default=1, on_delete=models.CASCADE, related_name='Friend')
 
 	def __str__(self): return str(self.User) + " -> " + str(self.Friend)
 
@@ -51,10 +73,13 @@ class Photo(models.Model):
 
 	@property
 	def url(self):
-		requestUrl = zk.applicationService + 'getStorageService/' + self.UUID + '/'
-		response = requests.get(requestUrl)
-		content = json.loads(response.content)
-		return content['storageService'] + 'getImage/' + self.UUID + '/'
+		try:
+			requestUrl = zk.applicationService + 'getStorageService/' + self.UUID + '/'
+			response = requests.get(requestUrl)
+			content = json.loads(response.content)
+			return content['storageService'] + 'getImage/' + self.UUID + '/'
+		except Exception:
+			return ""
 
 
 class PhotoComment(models.Model):

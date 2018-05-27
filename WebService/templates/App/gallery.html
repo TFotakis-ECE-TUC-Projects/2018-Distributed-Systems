@@ -10,7 +10,20 @@
 	{#			</div>#}
 	{#		</div>#}
 	{#	</div>#}
-	{% for photo in gallery.photo_set.all|dictsort:'UploadDateTime' %}
+	<div class="container h-100">
+		<div class="row justify-content-center align-items-center" style="height: 200px">
+			<div class="col">
+				<h3 class="text-center ">{{ gallery.Name }}</h3>
+				<hr class="hr-black">
+				<h5 class="text-center">
+					<a class="m-0 text-dark" href="{% url 'App:profile' gallery.Owner.id %}">
+						<strong>{{ gallery.Owner }}</strong>
+					</a>
+				</h5>
+			</div>
+		</div>
+	</div>
+	{% for photo in gallery.photo_set.all|dictsortreversed:'UploadDateTime' %}
 		{% include 'Shared/photoCard.html' %}
 	{% endfor %}
 {% endblock %}

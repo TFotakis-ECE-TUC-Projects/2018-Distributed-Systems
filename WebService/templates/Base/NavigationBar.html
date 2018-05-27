@@ -31,8 +31,8 @@
 						<i class="far fa-user"></i>
 					</a>
 					<div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-						<a class="dropdown-item" href="#"><i class="far fa-user-circle"></i> Profile</a>
-						<a class="dropdown-item" href="#"><i class="fas fa-sign-out-alt"></i> Log out</a>
+						<a class="dropdown-item" href="{% url 'App:myProfile' %}"><i class="far fa-user-circle"></i> Profile</a>
+						<a class="dropdown-item" href="{% url 'App:logout' %}"><i class="fas fa-sign-out-alt"></i> Log out</a>
 					</div>
 				</li>
 			</ul>
