@@ -133,5 +133,7 @@ ZOOKEEPER_PASSWORD = 'password'
 ZOOKEEPER_ROOT = '/TUClery/'
 ZOOKEEPER_PATH_TO_NODE = ''
 ZOOKEEPER_NODE_EPHIMERAL = False
-SERVER_HOSTNAME = 'snf-815302.vm.okeanos.grnet.gr'
+SERVER_HOSTNAME = 'http://snf-815302.vm.okeanos.grnet.gr'
+# Todo: fix Server_hostname
+SERVER_HOSTNAME = 'http://127.0.0.1'
 SERVER_PORT = '8000'

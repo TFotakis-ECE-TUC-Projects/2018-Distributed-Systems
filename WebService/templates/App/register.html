@@ -1,5 +1,5 @@
 {% extends 'Base/base.html' %}
-{% block title %}Register - {% endblock %}
+{% block title %}Register{% endblock %}
 {% block body %}
 	<div class="navbar-placeholder"></div>
 	<div class="container mt-5" style="height: 100vh">
@@ -12,14 +12,29 @@
 					<form action="" method="post">
 						{% csrf_token %}
 						<input type="text" name="username" class="form-control mb-2" aria-label="Username" placeholder="Username">
-						<input type="text" name="name" class="form-control mb-2" aria-label="Name" placeholder="Name">
-						<input type="text" name="surname" class="form-control mb-2" aria-label="Surname" placeholder="Surname">
+						<input type="text" name="firstname" class="form-control mb-2" aria-label="First Name" placeholder="First Name">
+						<input type="text" name="lastname" class="form-control mb-2" aria-label="Last Name" placeholder="Last Name">
 						<input type="email" name="email" class="form-control mb-2" aria-label="Email" placeholder="Email">
 						<input type="password" name="password" class="form-control mb-2" aria-label="Password" placeholder="Password">
 						<button class="btn btn-outline-success w-100 mb-2" type="submit">Register</button>
 						<a class="btn w-100" href="{% url 'App:login' %}">Login</a>
 					</form>
 				</div>
+				{% if authServices %}
+					<div class="card-footer text-center">
+						<h6 class="text-secondary mb-3">or try registering with</h6>
+						{% for authService in authServices %}
+							<a
+									class="btn btn-outline-dark mb-2"
+									href="{{ authService.url }}{{ registerUrl }}"
+									role="button"
+									aria-pressed="true"
+							>
+								{{ authService.name }}
+							</a>
+						{% endfor %}
+					</div>
+				{% endif %}
 			</div>
 		</div>
 	</div>

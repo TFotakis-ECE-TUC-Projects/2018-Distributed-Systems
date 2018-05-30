@@ -10,5 +10,4 @@ urlpatterns = [
 	path('uploadPhoto/', views.uploadPhoto, name='uploadPhoto'),
 	path('makeFriendship/<int:userId>/<int:friendId>/', views.makeFriendship, name='makeFriendship'),
 	path('deleteFriendship/<int:userId>/<int:friendId>/', views.deleteFriendship, name='deleteFriendship'),
-
 ]

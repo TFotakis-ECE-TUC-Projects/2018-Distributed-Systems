@@ -1,5 +1,5 @@
 {% extends 'Base/base.html' %}
-{% block title %}Login - {% endblock %}
+{% block title %}Login{% endblock %}
 {% block body %}
 	<div class="navbar-placeholder"></div>
 	<div class="container mt-5" style="height: 100vh">
@@ -17,6 +17,21 @@
 						<a class="btn w-100" href="{% url 'App:register' %}">Register</a>
 					</form>
 				</div>
+				{% if authServices %}
+					<div class="card-footer text-center">
+						<h6 class="text-secondary mb-3">or try logging in with</h6>
+						{% for authService in authServices %}
+							<a
+									class="btn btn-outline-dark mb-2"
+									href="{{ authService.url }}{{ loginUrl }}"
+									role="button"
+									aria-pressed="true"
+							>
+								{{ authService.name }}
+							</a>
+						{% endfor %}
+					</div>
+				{% endif %}
 			</div>
 		</div>
 	</div>

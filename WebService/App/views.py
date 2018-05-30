@@ -2,47 +2,60 @@ import requests
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
+from django.contrib.auth.models import User
 
 from WebService import settings
 from .models import Profile, Friendship, Gallery, Photo
+from WebService.zoo import zk
 
-LOGIN_URL = '/login?system=' + settings.ZOOKEEPER_NODE_ID  # + '&callback=https://www.google.com'
+LOGIN_URL = 'login?system=' + settings.ZOOKEEPER_NODE_ID + '&callback=' + settings.SERVER_HOSTNAME + ':' + settings.SERVER_PORT + '/'
+REGISTER_URL = 'register?system=' + settings.ZOOKEEPER_NODE_ID + '&callback=' + settings.SERVER_HOSTNAME + ':' + settings.SERVER_PORT + '/'
 
 
 def loginView(request):
 	if request.method == 'GET':
-		context = {}
+		authServices = zk.authenticationServiceList
+		context = {
+			'authServices': authServices,
+			'loginUrl': LOGIN_URL
+		}
 		return render(request=request, template_name="App/login.html", context=context)
 	else:
-		try:
-			requests.post('http://127.0.0.1:8003/api/login', data={})
-		except Exception:
-			pass
+		# try:
+		# 	requests.post('http://127.0.0.1:8003/api/login', data={})
+		# except Exception:
+		# 	pass
 		user = authenticate(username=request.POST['username'], password=request.POST['password'])
 		if user is not None:
 			login(request, user)
-			# return redirect('App:home')
-			return redirect(request.GET.get('callback'), permanent=True)
+			response = redirect(request.GET.get('callback'), permanent=True)
+			return response
 		else:
 			return redirect('loginView')
 
 
 def registerView(request):
 	if request.method == 'GET':
-		context = {}
+		authServices = zk.authenticationServiceList
+
+		context = {
+			'authServices': authServices,
+			'registerUrl': REGISTER_URL,
+		}
 		return render(request=request, template_name="App/register.html", context=context)
 	else:
-		return redirect('App:home')
+		user = User.objects.create_user(
+			username=request.POST['username'],
+			first_name=request.POST['firstname'],
+			last_name=request.POST['lastname'],
+			email=request.POST['email'],
+			password=request.POST['password']
+		)
+		if user is not None:
+			login(request, user)
+			return redirect('App:home')
+		return redirect('App:register')
 
-
-# User.objects.create_user(
-# 	username=request.POST['username'],
-# 	email=request.POST['email'],
-# 	password=request.POST['password'],
-# 	first_name=request.POST['name'],
-# 	last_name=request.POST['surname']
-# )
-# return HttpResponse(status=200)
 
 @login_required(login_url=LOGIN_URL, redirect_field_name='callback')
 def logoutView(request):

@@ -2,6 +2,7 @@ import json
 import requests
 from django.http import JsonResponse, HttpResponseRedirect
 from django.shortcuts import redirect
+from django.views.decorators.csrf import csrf_exempt
 
 from App.models import Friendship, Photo, PhotoComment
 from WebService.zoo import zk

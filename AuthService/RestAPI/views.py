@@ -1,12 +1,15 @@
-from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 
 
 @csrf_exempt
 def login(request):
 	print("Logged in")
-	pass
 
 
+# return redirect(request.GET.get('callback'))
+# return redirect('https://www.google.com')
+
+
+@csrf_exempt
 def register(request):
 	pass
