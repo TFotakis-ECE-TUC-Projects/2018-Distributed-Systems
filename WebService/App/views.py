@@ -1,12 +1,11 @@
-import requests
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
+from django.shortcuts import render, redirect
 
 from WebService import settings
-from .models import Profile, Friendship, Gallery, Photo
 from WebService.zoo import zk
+from .models import Profile, Friendship, Gallery, Photo
 
 LOGIN_URL = 'login?system=' + settings.ZOOKEEPER_NODE_ID + '&callback=' + settings.SERVER_HOSTNAME + ':' + settings.SERVER_PORT + '/'
 REGISTER_URL = 'register?system=' + settings.ZOOKEEPER_NODE_ID + '&callback=' + settings.SERVER_HOSTNAME + ':' + settings.SERVER_PORT + '/'
@@ -76,7 +75,7 @@ def homeView(request):
 
 @login_required(login_url=LOGIN_URL, redirect_field_name='callback')
 def profileView(request, id):
-	user = Profile.objects.get(id=id)
+	user = User.objects.get(id=id)
 	context = {'user': user}
 	return render(request=request, template_name="App/profile.html", context=context)
 

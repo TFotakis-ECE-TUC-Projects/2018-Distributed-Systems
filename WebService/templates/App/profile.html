@@ -4,7 +4,7 @@
 	<div class="navbar-placeholder"></div>
 	<div class="container">
 		<h1>
-			{{ user.Name }} - {{ user.Surname }}
+			{{ user.first_name }} - {{ user.last_name }}
 			<a class="text-dark" href="{% url 'App:uploadPhoto' user.id %}">
 				<i class="fas fa-upload"></i>
 			</a>

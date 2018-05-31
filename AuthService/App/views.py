@@ -7,6 +7,41 @@ from django.shortcuts import render, redirect
 from AuthService.zoo import zk
 
 
+def createLoginResponse(
+		dataErrorMessage='',
+		tokenErrorMessage='',
+		authIdentifier='',
+		systemIdentifier='',
+		userid='',
+		validtill='',
+		name='',
+		nick='',
+		email=''
+):
+	usermeta = {
+		'name': name,
+		'nick': nick,
+		'email': email
+	}
+	nonCryptedMessage = {
+		'AUTHID': authIdentifier,
+		'SID': systemIdentifier,
+		'userid': userid,
+		'validtill': validtill,
+		'usermeta': usermeta
+	}
+	encryptedMessage = ''
+	data = {
+		'error': dataErrorMessage,
+		'data': {
+			'error': tokenErrorMessage,
+			'issuer': authIdentifier,
+			'crypted': encryptedMessage
+		}
+	}
+	return data
+
+
 def loginView(request):
 	if request.method == 'GET':
 		context = {}
