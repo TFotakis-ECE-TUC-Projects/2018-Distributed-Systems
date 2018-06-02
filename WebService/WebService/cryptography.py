@@ -47,14 +47,22 @@ class Cryptography:
 		else:
 			return False
 
-	def defaultEncrypt(self, inputData):
-		data = self.encrypt(inputData, self.sharedKey, self.cipher)
+	def defaultEncrypt(self, inputData='', sharedKeyBase64=''):
+		if sharedKeyBase64 != '':
+			sharedKey = b64decode(sharedKeyBase64)
+			data = self.encrypt(inputData, sharedKey, self.cipher)
+		else:
+			data = self.encrypt(inputData, self.sharedKey, self.cipher)
 		result = {'error': '', 'data': data}
 		print(json.JSONEncoder().encode(result))
 		return result
 
-	def defaultDecrypt(self, inputData):
-		data = self.decrypt(inputData, self.sharedKey, self.cipher)
+	def defaultDecrypt(self, inputData='', sharedKeyBase64=''):
+		if sharedKeyBase64 != '':
+			sharedKey = b64decode(sharedKeyBase64)
+			data = self.decrypt(inputData, sharedKey, self.cipher)
+		else:
+			data = self.decrypt(inputData, self.sharedKey, self.cipher)
 		if not data:
 			result = {'error': 'python decrypt failed', 'data': ''}
 		else:

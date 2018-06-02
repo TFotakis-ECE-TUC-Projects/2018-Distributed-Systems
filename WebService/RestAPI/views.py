@@ -3,13 +3,14 @@ import requests
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse, HttpResponseRedirect
 from django.shortcuts import redirect
-from django.views.decorators.csrf import csrf_exempt
 
 from App.models import Friendship, Photo, PhotoComment
 from WebService import settings
+from WebService.cryptography import cr
 from WebService.zoo import zk
 
 LOGIN_URL = 'login?system=' + settings.ZOOKEEPER_NODE_ID + '&callback=' + settings.SERVER_HOSTNAME + ':' + settings.SERVER_PORT + '/'
+
 
 def statusView(request):
 	return JsonResponse(zk.getStatus())
@@ -68,3 +69,14 @@ def makeFriendship(request, userId, friendId):
 def deleteFriendship(request, userId, friendId):
 	Friendship.objects.filter(User_id=userId, Friend_id=friendId).delete()
 	return redirect('App:listOfUsers')
+
+
+def loginExternal(request):
+	userData = json.loads(request.GET.get('token'))
+	sharedKey = ''
+	for authService in zk.authenticationServiceList:
+		if authService['name'] == userData['issuer']:
+			sharedKey = authService['sharedKey']
+			break
+	decrypted = cr.defaultDecrypt(inputData=userData['crypted'], sharedKeyBase64=sharedKey)
+	return redirect('App:home')

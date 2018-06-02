@@ -124,15 +124,30 @@ STATICFILES_DIRS = (
 )
 
 # ZooKeeper Configuration
-ZOOKEEPER_NODE_ID = 'Auth1'
+ZOOKEEPER_NODE_ID = 'TUCleryAuth1'
 ZOOKEEPER_HOST = 'snf-815301.vm.okeanos.grnet.gr'
 ZOOKEEPER_USER = 'username'
 ZOOKEEPER_PASSWORD = 'password'
 ZOOKEEPER_ROOT = '/TUClery/'
 ZOOKEEPER_PATH_TO_NODE = 'Auth/'
 ZOOKEEPER_NODE_EPHIMERAL = True
-SERVER_HOSTNAME = 'snf-815302.vm.okeanos.grnet.gr'
-SERVER_PORT = '8000'
+# SERVER_HOSTNAME = 'snf-815302.vm.okeanos.grnet.gr'
+# SERVER_PORT = '8000'
 # Todo: Fix SERVER_HOSTNAME and SERVER_PORT
 SERVER_HOSTNAME = 'http://127.0.0.1'
 SERVER_PORT = '8003'
+SHARED_KEY_BASE_64 = 'UziKLGN2cWPns4SzwkPEeGxH/SQS5oOYqIrF2h7WbGs='
+AUTH_SYSTEM = 'TUClery'
+
+
+# ZOOKEEPER_NODE_ID = 'SKAUTH2'
+# ZOOKEEPER_HOST = 'snf-815301.vm.okeanos.grnet.gr'
+# ZOOKEEPER_USER = 'username'
+# ZOOKEEPER_PASSWORD = 'password'
+# ZOOKEEPER_ROOT = '/TUClery/'
+# ZOOKEEPER_PATH_TO_NODE = 'Auth/'
+# ZOOKEEPER_NODE_EPHIMERAL = False
+# SERVER_HOSTNAME = 'http://snf-816668.vm.okeanos.grnet.gr/authservicepython'
+# SERVER_PORT = ''
+# SHARED_KEY_BASE_64 = 'UziKLGN2cWPns4SzwkPEeGxH/SQS5oOYqIrF2h7WbGs='
+# AUTH_SYSTEM = 'SKSYSTEM2'

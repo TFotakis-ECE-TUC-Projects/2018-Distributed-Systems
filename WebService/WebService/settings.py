@@ -137,3 +137,4 @@ SERVER_HOSTNAME = 'http://snf-815302.vm.okeanos.grnet.gr'
 # Todo: fix Server_hostname
 SERVER_HOSTNAME = 'http://127.0.0.1'
 SERVER_PORT = '8000'
+SHARED_KEY_BASE_64 = 'UziKLGN2cWPns4SzwkPEeGxH/SQS5oOYqIrF2h7WbGs='

@@ -8,9 +8,11 @@ from WebService.zoo import zk
 from .models import Profile, Friendship, Gallery, Photo
 
 LOGIN_URL = 'login?system=' + settings.ZOOKEEPER_NODE_ID + '&callback=' + settings.SERVER_HOSTNAME + ':' + settings.SERVER_PORT + '/'
+LOGIN_URL = 'login?system=' + 'SKSYSTEM2' + '&callback=' + settings.SERVER_HOSTNAME + ':' + settings.SERVER_PORT + '/api/login'
 REGISTER_URL = 'register?system=' + settings.ZOOKEEPER_NODE_ID + '&callback=' + settings.SERVER_HOSTNAME + ':' + settings.SERVER_PORT + '/'
 
 
+# @csrf_exempt
 def loginView(request):
 	if request.method == 'GET':
 		authServices = zk.authenticationServiceList
@@ -62,6 +64,7 @@ def logoutView(request):
 	return redirect('App:home')
 
 
+# @csrf_exempt
 @login_required(login_url=LOGIN_URL, redirect_field_name='callback')
 def homeView(request):
 	# People that have me as a friend can show me their photos

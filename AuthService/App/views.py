@@ -1,15 +1,18 @@
+import json
 import requests
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
+from urllib.parse import urlencode
 
+from AuthService import settings
+from AuthService.cryptography import cr
 from AuthService.zoo import zk
 
 
 def createLoginResponse(
 		dataErrorMessage='',
-		tokenErrorMessage='',
 		authIdentifier='',
 		systemIdentifier='',
 		userid='',
@@ -18,26 +21,33 @@ def createLoginResponse(
 		nick='',
 		email=''
 ):
+	if dataErrorMessage != '':
+		data = {
+			"error": dataErrorMessage,
+			"data": ''
+		}
+		return data
 	usermeta = {
-		'name': name,
-		'nick': nick,
-		'email': email
+		"name": name,
+		"nick": nick,
+		"email": email
 	}
 	nonCryptedMessage = {
-		'AUTHID': authIdentifier,
-		'SID': systemIdentifier,
-		'userid': userid,
-		'validtill': validtill,
-		'usermeta': usermeta
+		"AUTHID": authIdentifier,
+		"SID": systemIdentifier,
+		"userid": userid,
+		"validtill": validtill,
+		"usermeta": usermeta
 	}
-	encryptedMessage = ''
+	encryptedMessage = cr.defaultEncrypt(str(nonCryptedMessage))
+	token = {
+		"error": encryptedMessage['error'],
+		"issuer": authIdentifier,
+		"crypted": encryptedMessage['data']
+	}
 	data = {
-		'error': dataErrorMessage,
-		'data': {
-			'error': tokenErrorMessage,
-			'issuer': authIdentifier,
-			'crypted': encryptedMessage
-		}
+		"error": dataErrorMessage,
+		"token": json.dumps(token)
 	}
 	return data
 
@@ -50,7 +60,19 @@ def loginView(request):
 		user = authenticate(username=request.POST['username'], password=request.POST['password'])
 		if user is not None:
 			login(request, user)
-			return redirect(request.GET.get('callback'), permanent=True)
+			dataQuery = '?' + urlencode(
+				createLoginResponse(
+					dataErrorMessage='',
+					authIdentifier=settings.ZOOKEEPER_NODE_ID,
+					systemIdentifier=settings.AUTH_SYSTEM,
+					userid=user,
+					validtill='',
+					name=user.first_name + ' ' + user.last_name,
+					nick=user.username,
+					email=user.email
+				)
+			)
+			return redirect(request.GET.get('callback') + dataQuery, permanent=True)
 		else:
 			return redirect('loginView')
 
