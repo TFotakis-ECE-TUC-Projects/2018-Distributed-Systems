@@ -10,7 +10,9 @@ from WebService.zoo import zk
 
 class Profile(models.Model):
 	User = models.OneToOneField(User, on_delete=models.CASCADE)
-	PhotoUUID = models.CharField(max_length=1024)
+	AuthService = models.CharField(max_length=100, blank=True, default='')
+	AuthServiceUserId = models.PositiveIntegerField(blank=True, default=1)
+	PhotoUUID = models.CharField(max_length=1024, blank=True, default='')
 
 	@property
 	def FullName(self): return self.User.first_name + ' ' + self.User.last_name

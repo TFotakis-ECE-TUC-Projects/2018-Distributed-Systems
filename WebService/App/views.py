@@ -1,60 +1,114 @@
-from django.contrib.auth import authenticate, login, logout
+import json
+import requests
+from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.shortcuts import render, redirect
 
 from WebService import settings
+from WebService.cryptography import cr
 from WebService.zoo import zk
 from .models import Profile, Friendship, Gallery, Photo
 
-LOGIN_URL = 'login?system=' + settings.ZOOKEEPER_NODE_ID + '&callback=' + settings.SERVER_HOSTNAME + ':' + settings.SERVER_PORT + '/'
-LOGIN_URL = 'login?system=' + 'SKSYSTEM2' + '&callback=' + settings.SERVER_HOSTNAME + ':' + settings.SERVER_PORT + '/api/login'
-REGISTER_URL = 'register?system=' + settings.ZOOKEEPER_NODE_ID + '&callback=' + settings.SERVER_HOSTNAME + ':' + settings.SERVER_PORT + '/'
+# LOGIN_URL = 'login?system=' + settings.ZOOKEEPER_NODE_ID + '&callback=' + settings.SERVER_HOSTNAME + ':' + settings.SERVER_PORT + '/'
+# LOGIN_URL = 'login?system=' + 'SKSYSTEM2' + '&callback=' + settings.SERVER_HOSTNAME + ':' + settings.SERVER_PORT + '/api/login'
+LOGIN_URL = 'login?system=' + 'SKSYSTEM2' + '&callback=/'
+# REGISTER_URL = 'register?system=' + 'TUCleryAuth1' + '&callback=' + settings.SERVER_HOSTNAME + ':' + settings.SERVER_PORT + '/api/register'
+REGISTER_URL = 'register?system=' + 'TUCleryAuth1' + '&callback=/'
 
 
-# @csrf_exempt
 def loginView(request):
 	if request.method == 'GET':
 		authServices = zk.authenticationServiceList
 		context = {
 			'authServices': authServices,
-			'loginUrl': LOGIN_URL
+			'serverUrl': settings.SERVER_HOSTNAME + ((':' + settings.SERVER_PORT) if settings.SERVER_PORT != '' else '')
 		}
 		return render(request=request, template_name="App/login.html", context=context)
 	else:
-		# try:
-		# 	requests.post('http://127.0.0.1:8003/api/login', data={})
-		# except Exception:
-		# 	pass
-		user = authenticate(username=request.POST['username'], password=request.POST['password'])
-		if user is not None:
-			login(request, user)
-			response = redirect(request.GET.get('callback'), permanent=True)
-			return response
-		else:
-			return redirect('loginView')
+		authService = {
+			'url': ''
+		}
+		for authService in zk.authenticationServiceList:
+			if authService['name'] == settings.DEFAULT_AUTH_SERVICE_NAME:
+				break
+		url = authService['loginUrl'] + '/'
+		newRequest = requests.get(url)
+		csrftoken = newRequest.cookies['csrftoken']
+		header = {'X-CSRFToken': csrftoken}
+		cookies = {'csrftoken': csrftoken}
+		context = {
+			'username': request.POST['username'],
+			'password': request.POST['password'],
+			'redirectmethod': 'POST'
+		}
+		response = requests.post(url=url, data=context, headers=header, cookies=cookies)
+		userData = json.loads(json.loads(response.content)['token'])
+		sharedKey = ''
+		for authService in zk.authenticationServiceList:
+			if authService['name'] == userData['issuer']:
+				sharedKey = authService['sharedKey']
+				break
+		decrypted = cr.defaultDecrypt(inputData=userData['crypted'], sharedKeyBase64=sharedKey)
+		userid = json.loads(decrypted['data'])['userid']
+		user = Profile.objects.get(AuthService=userData['issuer'], AuthServiceUserId=userid).User
+		login(request, user)
+		return redirect('App:home')
 
 
 def registerView(request):
 	if request.method == 'GET':
 		authServices = zk.authenticationServiceList
-
 		context = {
 			'authServices': authServices,
-			'registerUrl': REGISTER_URL,
+			'serverUrl': settings.SERVER_HOSTNAME + ((':' + settings.SERVER_PORT) if settings.SERVER_PORT != '' else '')
 		}
 		return render(request=request, template_name="App/register.html", context=context)
 	else:
-		user = User.objects.create_user(
-			username=request.POST['username'],
-			first_name=request.POST['firstname'],
-			last_name=request.POST['lastname'],
-			email=request.POST['email'],
-			password=request.POST['password']
-		)
-		if user is not None:
-			login(request, user)
-			return redirect('App:home')
+		authService = {
+			'url': ''
+		}
+		for authService in zk.authenticationServiceList:
+			if authService['name'] == settings.DEFAULT_AUTH_SERVICE_NAME:
+				break
+		url = authService['registerUrl'] + '/'
+		newRequest = requests.get(url)
+		csrftoken = newRequest.cookies['csrftoken']
+		header = {'X-CSRFToken': csrftoken}
+		cookies = {'csrftoken': csrftoken}
+		context = {
+			'username': request.POST['username'],
+			'firstname': request.POST['firstname'],
+			'lastname': request.POST['lastname'],
+			'email': request.POST['email'],
+			'password': request.POST['password'],
+			'redirectmethod': 'POST'
+		}
+		response = requests.post(url=url, data=context, headers=header, cookies=cookies)
+		if response.ok:
+			userData = json.loads(json.loads(response.content)['token'])
+			sharedKey = ''
+			for authService in zk.authenticationServiceList:
+				if authService['name'] == userData['issuer']:
+					sharedKey = authService['sharedKey']
+					break
+			decrypted = cr.defaultDecrypt(inputData=userData['crypted'], sharedKeyBase64=sharedKey)
+			data = json.loads(decrypted['data'])
+			usermeta = json.loads(data['usermeta'])
+			user = User.objects.create_user(
+				username=usermeta['nick'] + "-" + userData['issuer'],
+				first_name=usermeta['name'].split()[0],
+				last_name=usermeta['name'].split()[1],
+				email=usermeta['email'],
+			)
+			if user is not None:
+				user.profile.AuthService = userData['issuer']
+				user.profile.AuthServiceUserId = data['userid']
+				user.save()
+				login(request, user)
+				return redirect('App:home')
+			else:
+				return redirect('App:register')
 		return redirect('App:register')
 
 

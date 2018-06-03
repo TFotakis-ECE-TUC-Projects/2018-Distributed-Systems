@@ -144,12 +144,14 @@ class Zooconf:
 		for authService in serviceData['CHILDREN']:
 			authServiceData = self.getNodeData(authService)
 			if authServiceData != {}:
+				baseUrl = authServiceData['SERVER_HOSTNAME'] + ((':' + authServiceData['SERVER_PORT']) if authServiceData['SERVER_PORT'] != '' else '') + '/'
+				loginUrl = baseUrl + 'login?system=' + authServiceData['AUTH_SYSTEM'] + '&callback='
+				registerUrl = baseUrl + 'register?system=' + authServiceData['AUTH_SYSTEM'] + '&callback='
 				authServiceDict = {
 					'name': authService,
-					'url':
-						authServiceData['SERVER_HOSTNAME']
-						+ ((':' + authServiceData['SERVER_PORT']) if authServiceData['SERVER_PORT'] != '' else '')
-						+ '/',
+					'url': baseUrl,
+					'loginUrl': loginUrl,
+					'registerUrl': registerUrl,
 					'sharedKey': authServiceData['SHARED_KEY_BASE_64'],
 					'system': authServiceData['AUTH_SYSTEM']
 				}

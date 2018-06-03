@@ -11,4 +11,5 @@ urlpatterns = [
 	path('makeFriendship/<int:userId>/<int:friendId>/', views.makeFriendship, name='makeFriendship'),
 	path('deleteFriendship/<int:userId>/<int:friendId>/', views.deleteFriendship, name='deleteFriendship'),
 	path('login', views.loginExternal, name='login'),
+	path('register', views.registerExternal, name='register'),
 ]

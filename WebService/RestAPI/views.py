@@ -1,10 +1,12 @@
 import json
 import requests
+from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 from django.http import JsonResponse, HttpResponseRedirect
 from django.shortcuts import redirect
 
-from App.models import Friendship, Photo, PhotoComment
+from App.models import Friendship, Photo, PhotoComment, Profile
 from WebService import settings
 from WebService.cryptography import cr
 from WebService.zoo import zk
@@ -72,11 +74,49 @@ def deleteFriendship(request, userId, friendId):
 
 
 def loginExternal(request):
-	userData = json.loads(request.GET.get('token'))
+	try:
+		userData = json.loads(request.GET.get('token'))
+	except Exception:
+		return redirect('App:login')
 	sharedKey = ''
 	for authService in zk.authenticationServiceList:
 		if authService['name'] == userData['issuer']:
 			sharedKey = authService['sharedKey']
 			break
 	decrypted = cr.defaultDecrypt(inputData=userData['crypted'], sharedKeyBase64=sharedKey)
-	return redirect('App:home')
+	userid = json.loads(decrypted['data'])['userid']
+	profile = Profile.objects.get(AuthService=userData['issuer'], AuthServiceUserId=userid)
+	if profile is not None:
+		login(request, profile.User)
+		return redirect('App:home')
+	else:
+		return redirect('App:login')
+
+
+def registerExternal(request):
+	try:
+		userData = json.loads(request.GET.get('token'))
+	except Exception:
+		return redirect('App:register')
+	sharedKey = ''
+	for authService in zk.authenticationServiceList:
+		if authService['name'] == userData['issuer']:
+			sharedKey = authService['sharedKey']
+			break
+	decrypted = cr.defaultDecrypt(inputData=userData['crypted'], sharedKeyBase64=sharedKey)
+	data = json.loads(decrypted['data'])
+	usermeta = json.loads(data['usermeta'])
+	user = User.objects.create_user(
+		username=usermeta['nick'] + "-" + userData['issuer'],
+		first_name=usermeta['name'].split()[0],
+		last_name=usermeta['name'].split()[1],
+		email=usermeta['email'],
+	)
+	if user is not None:
+		user.profile.AuthService = userData['issuer']
+		user.profile.AuthServiceUserId = data['userid']
+		user.save()
+		login(request, user)
+		return redirect('App:home')
+	else:
+		return redirect('App:register')
