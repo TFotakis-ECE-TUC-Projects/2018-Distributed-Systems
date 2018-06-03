@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 from django.http import JsonResponse, HttpResponseRedirect
 from django.shortcuts import redirect
 
-from App.models import Friendship, Photo, PhotoComment, Profile
+from App.models import Friendship, Photo, PhotoComment, Profile, Like
 from WebService import settings
 from WebService.cryptography import cr
 from WebService.zoo import zk
@@ -122,3 +122,15 @@ def registerExternal(request):
 		return redirect('App:home')
 	else:
 		return redirect('App:register')
+
+
+@login_required(login_url=LOGIN_URL, redirect_field_name='callback')
+def likePhoto(request, photoId):
+	photo = Photo.objects.get(id=photoId)
+	user = User.objects.get(User=request.user.id)
+	if Like.objects.filter(User=user, Photo=photo):
+		Like.objects.get(User=user, Photo=photo).delete()
+	else:
+		Like.objects.create(User=user, Photo=photo)
+	referer = request.META.get('HTTP_REFERER')
+	return HttpResponseRedirect(referer)

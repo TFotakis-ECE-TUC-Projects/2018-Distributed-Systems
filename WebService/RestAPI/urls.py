@@ -12,4 +12,5 @@ urlpatterns = [
 	path('deleteFriendship/<int:friendId>/', views.deleteFriendship, name='deleteFriendship'),
 	path('login', views.loginExternal, name='login'),
 	path('register', views.registerExternal, name='register'),
+	path('likePhoto/<int:photoId>/', views.likePhoto, name='likePhoto'),
 ]
