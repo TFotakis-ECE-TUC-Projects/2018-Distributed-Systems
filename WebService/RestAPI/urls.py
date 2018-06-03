@@ -8,8 +8,8 @@ urlpatterns = [
 	path('addComment/<int:photoId>', views.addComment, name='addComment'),
 	path('deleteComment/<int:commentId>/', views.deleteComment, name='deleteComment'),
 	path('uploadPhoto/', views.uploadPhoto, name='uploadPhoto'),
-	path('makeFriendship/<int:userId>/<int:friendId>/', views.makeFriendship, name='makeFriendship'),
-	path('deleteFriendship/<int:userId>/<int:friendId>/', views.deleteFriendship, name='deleteFriendship'),
+	path('makeFriendship/<int:friendId>/', views.makeFriendship, name='makeFriendship'),
+	path('deleteFriendship/<int:friendId>/', views.deleteFriendship, name='deleteFriendship'),
 	path('login', views.loginExternal, name='login'),
 	path('register', views.registerExternal, name='register'),
 ]

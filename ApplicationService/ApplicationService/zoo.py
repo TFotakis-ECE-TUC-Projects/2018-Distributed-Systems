@@ -32,8 +32,11 @@ class Zooconf:
 		dataJsonDict = {
 			'SERVER_HOSTNAME': settings.SERVER_HOSTNAME,
 			'SERVER_PORT': settings.SERVER_PORT,
+			'SHARED_KEY_BASE_64': settings.SHARED_KEY_BASE_64,
 			'CHILDREN': []
 		}
+		if settings.ZOOKEEPER_PATH_TO_NODE == 'Auth/':
+			dataJsonDict['AUTH_SYSTEM'] = settings.AUTH_SYSTEM
 		if self.connection.exists(path=settings.ZOOKEEPER_ROOT + settings.ZOOKEEPER_PATH_TO_NODE + settings.ZOOKEEPER_NODE_ID):
 			self.connection.set(
 				path=settings.ZOOKEEPER_ROOT + settings.ZOOKEEPER_PATH_TO_NODE + settings.ZOOKEEPER_NODE_ID,
@@ -80,7 +83,9 @@ class Zooconf:
 				node = {
 					'SERVER_HOSTNAME': settings.SERVER_HOSTNAME,
 					'SERVER_PORT': settings.SERVER_PORT,
-					'CHILDREN': []
+					'SHARED_KEY_BASE_64': settings.SHARED_KEY_BASE_64,
+					'CHILDREN': [],
+					'AUTH_SYSTEM': settings.AUTH_SYSTEM
 				}
 				if node not in self.authenticationServiceList:
 					self.__publishService()
@@ -139,9 +144,16 @@ class Zooconf:
 		for authService in serviceData['CHILDREN']:
 			authServiceData = self.getNodeData(authService)
 			if authServiceData != {}:
+				baseUrl = authServiceData['SERVER_HOSTNAME'] + ((':' + authServiceData['SERVER_PORT']) if authServiceData['SERVER_PORT'] != '' else '') + '/'
+				loginUrl = baseUrl + 'login?system=' + authServiceData['AUTH_SYSTEM'] + '&callback='
+				registerUrl = baseUrl + 'register?system=' + authServiceData['AUTH_SYSTEM'] + '&callback='
 				authServiceDict = {
 					'name': authService,
-					'url': authServiceData['SERVER_HOSTNAME'] + ':' + authServiceData['SERVER_PORT'] + '/'
+					'url': baseUrl,
+					'loginUrl': loginUrl,
+					'registerUrl': registerUrl,
+					'sharedKey': authServiceData['SHARED_KEY_BASE_64'],
+					'system': authServiceData['AUTH_SYSTEM']
 				}
 				self.authenticationServiceList.append(authServiceDict)
 

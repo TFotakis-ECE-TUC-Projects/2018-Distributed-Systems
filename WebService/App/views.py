@@ -10,11 +10,7 @@ from WebService.cryptography import cr
 from WebService.zoo import zk
 from .models import Profile, Friendship, Gallery, Photo
 
-# LOGIN_URL = 'login?system=' + settings.ZOOKEEPER_NODE_ID + '&callback=' + settings.SERVER_HOSTNAME + ':' + settings.SERVER_PORT + '/'
-# LOGIN_URL = 'login?system=' + 'SKSYSTEM2' + '&callback=' + settings.SERVER_HOSTNAME + ':' + settings.SERVER_PORT + '/api/login'
-LOGIN_URL = 'login?system=' + 'SKSYSTEM2' + '&callback=/'
-# REGISTER_URL = 'register?system=' + 'TUCleryAuth1' + '&callback=' + settings.SERVER_HOSTNAME + ':' + settings.SERVER_PORT + '/api/register'
-REGISTER_URL = 'register?system=' + 'TUCleryAuth1' + '&callback=/'
+LOGIN_URL = 'login/'
 
 
 def loginView(request):
@@ -49,7 +45,7 @@ def loginView(request):
 			if authService['name'] == userData['issuer']:
 				sharedKey = authService['sharedKey']
 				break
-		decrypted = cr.defaultDecrypt(inputData=userData['crypted'], sharedKeyBase64=sharedKey)
+		decrypted = cr.defaultDecrypt(inputData=userData['crypted'].replace(' ', '+'), sharedKeyBase64=sharedKey)
 		userid = json.loads(decrypted['data'])['userid']
 		user = Profile.objects.get(AuthService=userData['issuer'], AuthServiceUserId=userid).User
 		login(request, user)
@@ -159,11 +155,9 @@ def uploadPhotoView(request, ownerId):
 
 @login_required(login_url=LOGIN_URL, redirect_field_name='callback')
 def listOfUsers(request):
-	# Todo: change user id from being hardcoded
 	userId = request.user.id
 	knownUsers = Friendship.objects.filter(User_id=userId)
 	excludeList = knownUsers.values_list('Friend_id', flat=True)
 	unknownUsers = Profile.objects.exclude(id=userId).exclude(id__in=excludeList)
 	context = {'unknownUsers': unknownUsers, 'knownUsers': knownUsers}
-
 	return render(request, template_name="App/userList.html", context=context)

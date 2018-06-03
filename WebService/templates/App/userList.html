@@ -10,7 +10,7 @@
 					{% for user in unknownUsers %}
 						<li>
 							<a href="{% url 'App:profile' user.id %}">{{ user.FullName }}</a>
-							<a href="{% url 'RestAPI:makeFriendship' 1 user.id %}"><i class="far fa-plus-square"></i></a>
+							<a href="{% url 'RestAPI:makeFriendship' user.id %}"><i class="far fa-plus-square"></i></a>
 						</li>
 					{% endfor %}
 				</ul>
@@ -20,8 +20,8 @@
 				<ul>
 					{% for user in knownUsers %}
 						<li>
-							<a href="{% url 'App:profile' user.Friend_id %}">{{ user.Friend.FullName }}</a>
-							<a href="{% url 'RestAPI:deleteFriendship' 1 user.Friend_id %}"><i class="far fa-minus-square"></i></a>
+							<a href="{% url 'App:profile' user.Friend_id %}">{{ user.Friend.get_full_name }}</a>
+							<a href="{% url 'RestAPI:deleteFriendship' user.Friend_id %}"><i class="far fa-minus-square"></i></a>
 						</li>
 					{% endfor %}
 				</ul>

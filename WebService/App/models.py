@@ -5,6 +5,7 @@ from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
+from WebService.cryptography import cr
 from WebService.zoo import zk
 
 
@@ -79,7 +80,15 @@ class Photo(models.Model):
 			requestUrl = zk.applicationService + 'getStorageService/' + self.UUID + '/'
 			response = requests.get(requestUrl)
 			content = json.loads(response.content)
-			return content['storageService'] + 'getImage/' + self.UUID + '/'
+			username = self.Gallery.Owner.username
+			sharedKeyBase64 = ''
+			for storageService in zk.storageServicesList:
+				if storageService['url'] == content['storageService']:
+					sharedKeyBase64 = storageService['sharedKey']
+					break
+			hmac = cr.defaultEncrypt(inputData=self.UUID + username, sharedKeyBase64=sharedKeyBase64)['data']
+			url = content['storageService'] + 'getImage?uuid=' + self.UUID + '&username=' + username + '&hmac=' + hmac
+			return url
 		except Exception:
 			return ""
 

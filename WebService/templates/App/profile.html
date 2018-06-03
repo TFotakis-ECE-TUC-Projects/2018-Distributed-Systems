@@ -4,13 +4,14 @@
 	<div class="navbar-placeholder"></div>
 	<div class="container">
 		<h1>
-			{{ user.first_name }} - {{ user.last_name }}
+			{{ user.get_full_name }}
 			<a class="text-dark" href="{% url 'App:uploadPhoto' user.id %}">
 				<i class="fas fa-upload"></i>
 			</a>
 		</h1>
-		<p>{{ user.Email }}</p>
-		<p>{{ user.Username }}</p>
+		<a href="{% url 'App:listOfUsers' %}">Friend List</a>
+		<p>{{ user.email }}</p>
+		<p>{{ user.username }}</p>
 		<ul>
 			{% for gallery in user.gallery_set.all %}
 				<li><a href="{% url 'App:gallery' gallery.id %}">{{ gallery.Name }}</a></li>

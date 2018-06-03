@@ -164,7 +164,8 @@ class Zooconf:
 			if storageServiceData != {}:
 				storageServiceDict = {
 					'name': storageService,
-					'url': storageServiceData['SERVER_HOSTNAME'] + ':' + storageServiceData['SERVER_PORT'] + '/'
+					'url': storageServiceData['SERVER_HOSTNAME'] + ':' + storageServiceData['SERVER_PORT'] + '/',
+					'sharedKey': storageServiceData['SHARED_KEY_BASE_64'],
 				}
 				self.storageServicesList.append(storageServiceDict)
 

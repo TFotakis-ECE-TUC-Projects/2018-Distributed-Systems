@@ -62,13 +62,15 @@ def uploadPhoto(request):
 
 
 @login_required(login_url=LOGIN_URL, redirect_field_name='callback')
-def makeFriendship(request, userId, friendId):
+def makeFriendship(request, friendId):
+	userId = request.user.id
 	Friendship.objects.create(User_id=userId, Friend_id=friendId)
 	return redirect('App:listOfUsers')
 
 
 @login_required(login_url=LOGIN_URL, redirect_field_name='callback')
-def deleteFriendship(request, userId, friendId):
+def deleteFriendship(request, friendId):
+	userId = request.user.id
 	Friendship.objects.filter(User_id=userId, Friend_id=friendId).delete()
 	return redirect('App:listOfUsers')
 
@@ -83,7 +85,7 @@ def loginExternal(request):
 		if authService['name'] == userData['issuer']:
 			sharedKey = authService['sharedKey']
 			break
-	decrypted = cr.defaultDecrypt(inputData=userData['crypted'], sharedKeyBase64=sharedKey)
+	decrypted = cr.defaultDecrypt(inputData=userData['crypted'].replace(' ', '+'), sharedKeyBase64=sharedKey)
 	userid = json.loads(decrypted['data'])['userid']
 	profile = Profile.objects.get(AuthService=userData['issuer'], AuthServiceUserId=userid)
 	if profile is not None:
