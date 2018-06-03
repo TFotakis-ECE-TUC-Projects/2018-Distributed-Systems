@@ -1,0 +1,15 @@
+{% extends 'Base/base.html' %}
+{% block title %}Create Gallery - {% endblock %}
+{% block body %}
+	<div class="navbar-placeholder"></div>
+	<div class="navbar-placeholder"></div>
+	<div class="container">
+		<div class="col-4 offset-4">
+			<form action="{% url 'App:createGallery' %}" method="post" enctype="multipart/form-data">
+				{% csrf_token %}
+				<input type="text" name="name" class="form-control mb-2" aria-label="Gallery Name…" placeholder="Gallery Name…">
+				<button class="btn mx-auto w-100"><i class="fas fa-upload text-center"></i></button>
+			</form>
+		</div>
+	</div>
+{% endblock %}

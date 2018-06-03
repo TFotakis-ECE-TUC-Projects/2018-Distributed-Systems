@@ -114,7 +114,6 @@ def logoutView(request):
 	return redirect('App:home')
 
 
-# @csrf_exempt
 @login_required(login_url=LOGIN_URL, redirect_field_name='callback')
 def homeView(request):
 	# People that have me as a friend can show me their photos
@@ -161,3 +160,14 @@ def listOfUsers(request):
 	unknownUsers = Profile.objects.exclude(id=userId).exclude(id__in=excludeList)
 	context = {'unknownUsers': unknownUsers, 'knownUsers': knownUsers}
 	return render(request, template_name="App/userList.html", context=context)
+
+
+@login_required(login_url=LOGIN_URL, redirect_field_name='callback')
+def createGallery(request):
+	if request.method == 'GET':
+		context = {}
+		return render(request=request, template_name="App/createGallery.html", context=context)
+	else:
+		userId = request.user.id
+		Gallery.objects.create(Owner_id=userId, Name=request.POST['name'])
+		return redirect('App:myProfile')
