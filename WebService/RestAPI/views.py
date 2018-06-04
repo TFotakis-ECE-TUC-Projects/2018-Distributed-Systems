@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 from django.http import JsonResponse, HttpResponseRedirect
 from django.shortcuts import redirect
 
-from App.models import Friendship, Photo, PhotoComment, Profile, Like, GalleryComment
+from App.models import Friendship, Photo, PhotoComment, Profile, Like, GalleryComment, Gallery
 from WebService import settings
 from WebService.cryptography import cr
 from WebService.zoo import zk
@@ -165,5 +165,12 @@ def likePhoto(request, photoId):
 @login_required(login_url=LOGIN_URL, redirect_field_name='callback')
 def deletePhoto(request, photoId):
 	Photo.objects.get(id=photoId).delete()
+	referer = request.META.get('HTTP_REFERER')
+	return HttpResponseRedirect(referer)
+
+
+@login_required(login_url=LOGIN_URL, redirect_field_name='callback')
+def deleteGallery(request, galleryId):
+	Gallery.objects.get(id=galleryId).delete()
 	referer = request.META.get('HTTP_REFERER')
 	return HttpResponseRedirect(referer)

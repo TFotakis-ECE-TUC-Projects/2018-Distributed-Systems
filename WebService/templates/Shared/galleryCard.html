@@ -10,6 +10,17 @@
 						<br>
 						<a class="text-dark" href="{% url 'App:profile' gallery.Owner.id %}"><strong>{{ gallery.Owner.get_full_name }}</strong></a>
 					</div>
+					<div class="dropdown ml-auto">
+						<h6 class="m-0" data-toggle="dropdown">
+							<i class="fas fa-ellipsis-h"></i>
+						</h6>
+						<div class="dropdown-menu">
+							<a class="dropdown-item" href="{% url 'RestAPI:deleteGallery' gallery.id %}">
+								Delete Gallery
+								<i class="far fa-trash-alt"></i>
+							</a>
+						</div>
+					</div>
 				</div>
 			</div>
 			<a href="{% url 'App:gallery' gallery.id %}">
