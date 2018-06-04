@@ -52,7 +52,9 @@ def createLoginResponse(
 
 def loginView(request):
 	if request.method == 'GET':
-		context = {}
+		context = {
+			'query_string': request.META.get('QUERY_STRING').replace('login', 'register')
+		}
 		return render(request=request, template_name="login.html", context=context)
 	else:
 		user = authenticate(username=request.POST['username'], password=request.POST['password'])
@@ -79,7 +81,9 @@ def loginView(request):
 
 def registerView(request):
 	if request.method == 'GET':
-		context = {}
+		context = {
+			'query_string': request.META.get('QUERY_STRING').replace('register', 'login')
+		}
 		return render(request=request, template_name="register.html", context=context)
 	else:
 		user = User.objects.create_user(

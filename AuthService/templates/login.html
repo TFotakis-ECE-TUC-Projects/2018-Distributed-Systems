@@ -13,7 +13,7 @@
 						<input type="text" name="username" class="form-control mb-2" aria-label="Username" placeholder="Username">
 						<input type="password" name="password" class="form-control mb-2" aria-label="Password" placeholder="Password">
 						<button class="btn btn-outline-success w-100 mb-2" type="submit">Login</button>
-						<a class="btn w-100" href="{% url 'App:register' %}">Register</a>
+						<a class="btn w-100" href="{% url 'App:register' %}?{{ query_string }}">Register</a>
 					</form>
 				</div>
 			</div>

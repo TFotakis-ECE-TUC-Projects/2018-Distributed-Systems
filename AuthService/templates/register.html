@@ -16,7 +16,7 @@
 						<input type="email" name="email" class="form-control mb-2" aria-label="Email" placeholder="Email">
 						<input type="password" name="password" class="form-control mb-2" aria-label="Password" placeholder="Password">
 						<button class="btn btn-outline-success w-100 mb-2" type="submit">Register</button>
-						<a class="btn w-100" href="{% url 'App:login' %}">Login</a>
+						<a class="btn w-100" href="{% url 'App:login' %}?{{ query_string }}">Login</a>
 					</form>
 				</div>
 			</div>
