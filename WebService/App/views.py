@@ -128,7 +128,10 @@ def homeView(request):
 @login_required(login_url=LOGIN_URL, redirect_field_name='callback')
 def profileView(request, id):
 	user = User.objects.get(id=id)
-	context = {'user': user}
+	context = {
+		'user': user,
+		'isFriend': id == request.user.id
+	}
 	return render(request=request, template_name="App/profile.html", context=context)
 
 
@@ -145,11 +148,17 @@ def galleryView(request, id):
 
 
 @login_required(login_url=LOGIN_URL, redirect_field_name='callback')
-def uploadPhotoView(request, ownerId):
+def uploadPhotoView(request):
 	context = {
-		'galleries': Gallery.objects.filter(Owner=ownerId).all()
+		'galleries': Gallery.objects.filter(Owner=request.user.id).all()
 	}
 	return render(request=request, template_name="App/uploadPhoto.html", context=context)
+
+
+@login_required(login_url=LOGIN_URL, redirect_field_name='callback')
+def uploadProfilePhotoView(request):
+	context = {}
+	return render(request=request, template_name="App/uploadProfilePhoto.html", context=context)
 
 
 @login_required(login_url=LOGIN_URL, redirect_field_name='callback')

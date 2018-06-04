@@ -9,11 +9,49 @@ from WebService.cryptography import cr
 from WebService.zoo import zk
 
 
+class Gallery(models.Model):
+	Owner = models.ForeignKey(User, on_delete=models.CASCADE, default=1)
+	Name = models.CharField(max_length=100)
+
+	def __str__(self): return str(self.Name) + " - " + str(self.Owner)
+
+
+class Photo(models.Model):
+	Gallery = models.ForeignKey(Gallery, on_delete=models.CASCADE, default=1, null=True, blank=True)
+	UploadDateTime = models.DateTimeField(auto_now_add=True, null=True)
+	UUID = models.CharField(max_length=1024)
+	Location = models.CharField(default='', blank=True, null=True, max_length=100)
+	Description = models.CharField(default='', blank=True, null=True, max_length=1024)
+
+	def __str__(self): return str(self.Gallery) + " - " + self.UUID
+
+	@property
+	def url(self):
+		try:
+			requestUrl = zk.applicationService + 'getStorageService/' + self.UUID + '/'
+			response = requests.get(requestUrl)
+			content = json.loads(response.content)
+			try:
+				username = self.Gallery.Owner.username
+			except Exception:
+				username = ""
+			sharedKeyBase64 = ''
+			for storageService in zk.storageServicesList:
+				if storageService['url'] == content['storageService']:
+					sharedKeyBase64 = storageService['sharedKey']
+					break
+			hmac = cr.defaultEncrypt(inputData=self.UUID + username, sharedKeyBase64=sharedKeyBase64)['data']
+			url = content['storageService'] + 'getImage?uuid=' + self.UUID + '&username=' + username + '&hmac=' + hmac
+			return url
+		except Exception:
+			return ""
+
+
 class Profile(models.Model):
 	User = models.OneToOneField(User, on_delete=models.CASCADE)
 	AuthService = models.CharField(max_length=100, blank=True, default='')
 	AuthServiceUserId = models.PositiveIntegerField(blank=True, default=1)
-	PhotoUUID = models.CharField(max_length=1024, blank=True, default='')
+	ProfilePhoto = models.ForeignKey(Photo, on_delete=models.SET_DEFAULT, default=None, null=True, blank=True)
 
 	@property
 	def FullName(self): return self.User.first_name + ' ' + self.User.last_name
@@ -49,13 +87,6 @@ class Friendship(models.Model):
 	def __str__(self): return str(self.User) + " -> " + str(self.Friend)
 
 
-class Gallery(models.Model):
-	Owner = models.ForeignKey(User, on_delete=models.CASCADE, default=1)
-	Name = models.CharField(max_length=100)
-
-	def __str__(self): return str(self.Name) + " - " + str(self.Owner)
-
-
 class GalleryComment(models.Model):
 	User = models.ForeignKey(User, on_delete=models.CASCADE, default=1)
 	Gallery = models.ForeignKey(Gallery, on_delete=models.CASCADE, default=1)
@@ -63,34 +94,6 @@ class GalleryComment(models.Model):
 	Text = models.CharField(max_length=1024)
 
 	def __str__(self): return str(self.Gallery) + " - " + str(self.UploadDateTime)
-
-
-class Photo(models.Model):
-	Gallery = models.ForeignKey(Gallery, on_delete=models.CASCADE, default=1)
-	UploadDateTime = models.DateTimeField(auto_now_add=True, null=True)
-	UUID = models.CharField(max_length=1024)
-	Location = models.CharField(default='', blank=True, null=True, max_length=100)
-	Description = models.CharField(default='', blank=True, null=True, max_length=1024)
-
-	def __str__(self): return str(self.Gallery) + " - " + self.UUID
-
-	@property
-	def url(self):
-		try:
-			requestUrl = zk.applicationService + 'getStorageService/' + self.UUID + '/'
-			response = requests.get(requestUrl)
-			content = json.loads(response.content)
-			username = self.Gallery.Owner.username
-			sharedKeyBase64 = ''
-			for storageService in zk.storageServicesList:
-				if storageService['url'] == content['storageService']:
-					sharedKeyBase64 = storageService['sharedKey']
-					break
-			hmac = cr.defaultEncrypt(inputData=self.UUID + username, sharedKeyBase64=sharedKeyBase64)['data']
-			url = content['storageService'] + 'getImage?uuid=' + self.UUID + '&username=' + username + '&hmac=' + hmac
-			return url
-		except Exception:
-			return ""
 
 
 class PhotoComment(models.Model):

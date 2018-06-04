@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 from django.http import JsonResponse, HttpResponseRedirect
 from django.shortcuts import redirect
 
-from App.models import Friendship, Photo, PhotoComment, Profile, Like
+from App.models import Friendship, Photo, PhotoComment, Profile, Like, GalleryComment
 from WebService import settings
 from WebService.cryptography import cr
 from WebService.zoo import zk
@@ -25,6 +25,13 @@ def nodeStatusView(request, node):
 @login_required(login_url=LOGIN_URL, redirect_field_name='callback')
 def addComment(request, photoId):
 	PhotoComment.objects.create(User_id=request.user.id, Photo_id=photoId, Text=request.GET['comment'])
+	referer = request.META.get('HTTP_REFERER')
+	return HttpResponseRedirect(referer)
+
+
+@login_required(login_url=LOGIN_URL, redirect_field_name='callback')
+def addGalleryComment(request, galleryId):
+	GalleryComment.objects.create(User_id=request.user.id, Gallery_id=galleryId, Text=request.GET['comment'])
 	referer = request.META.get('HTTP_REFERER')
 	return HttpResponseRedirect(referer)
 
@@ -57,8 +64,27 @@ def uploadPhoto(request):
 		UUID = json.loads(response.content)['UUID']
 		Photo.objects.create(Gallery_id=galleryId, UUID=UUID, Description=description, Location=location)
 		return redirect('App:gallery', id=galleryId)
-	# Todo: Replace harcoded user
-	return redirect('App:uploadPhoto', 1)
+	return redirect('App:uploadPhoto', request.user.id)
+
+
+@login_required(login_url=LOGIN_URL, redirect_field_name='callback')
+def uploadProfilePhoto(request):
+	galleryId = None
+	description = None
+	location = None
+	photoFile = request.FILES['photoFile']
+
+	requestUrl = zk.applicationService + 'uploadPhoto/'
+	response = requests.post(requestUrl, files={'photoFile': photoFile})
+
+	if response.ok:
+		UUID = json.loads(response.content)['UUID']
+		photo = Photo.objects.create(Gallery_id=galleryId, UUID=UUID, Description=description, Location=location)
+		user = User.objects.get(id=request.user.id)
+		user.profile.ProfilePhoto = photo
+		user.save()
+		return redirect('App:myProfile')
+	return redirect('App:uploadProfilePhoto')
 
 
 @login_required(login_url=LOGIN_URL, redirect_field_name='callback')
@@ -132,5 +158,12 @@ def likePhoto(request, photoId):
 		Like.objects.get(User=user, Photo=photo).delete()
 	else:
 		Like.objects.create(User=user, Photo=photo)
+	referer = request.META.get('HTTP_REFERER')
+	return HttpResponseRedirect(referer)
+
+
+@login_required(login_url=LOGIN_URL, redirect_field_name='callback')
+def deletePhoto(request, photoId):
+	Photo.objects.get(id=photoId).delete()
 	referer = request.META.get('HTTP_REFERER')
 	return HttpResponseRedirect(referer)

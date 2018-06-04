@@ -17,7 +17,7 @@
 				<hr class="hr-black">
 				<h5 class="text-center">
 					<a class="m-0 text-dark" href="{% url 'App:profile' gallery.Owner.id %}">
-						<strong>{{ gallery.Owner }}</strong>
+						<strong>{{ gallery.Owner.get_full_name }}</strong>
 					</a>
 				</h5>
 			</div>

@@ -1,0 +1,51 @@
+<a name="{{ gallery.id }}"></a>
+<div class="navbar-placeholder"></div>
+<div class="container align-content-center">
+	<div class="col-xl-6 col-lg-8 col-md-10 mx-auto">
+		<div class="card">
+			<div class="card-header bg-white">
+				<div class="row align-items-center px-2">
+					<div class="ml-2">
+						<a class="text-dark" href="{% url 'App:gallery' gallery.id %}">{{ gallery.Name }}</a>
+						<br>
+						<a class="text-dark" href="{% url 'App:profile' gallery.Owner.id %}"><strong>{{ gallery.Owner.get_full_name }}</strong></a>
+					</div>
+				</div>
+			</div>
+			<a href="{% url 'App:gallery' gallery.id %}">
+				<div class="card-body p-0 text-center">
+					{% for photo in gallery.photo_set.all %}
+						<img style="max-height: 150px; max-width: 150px;" src="{{ photo.url }}" alt="">
+					{% endfor %}
+				</div>
+			</a>
+			<div class="card-footer bg-white">
+				<div class="row px-2">
+					<ul class="d-block p-0 m-0" style="list-style: none">
+						{% for comment in gallery.gallerycomment_set.all %}
+							<li>
+								<a class="text-dark mr-1" href='{% url 'App:profile' comment.User.id %}'><strong>{{ comment.User.get_full_name }}</strong></a>
+								<span>{{ comment.Text }}</span>
+								{#								<a class="text-dark" href='#'><i class="far fa-edit"></i></a>#}
+								<a class="text-dark" href='{% url 'RestAPI:deleteComment' comment.id %}'><i class="far fa-trash-alt"></i></a>
+							</li>
+						{% endfor %}
+					</ul>
+				</div>
+				<hr>
+				<div class="row px-2">
+					<form class="form-inline w-100" method="get" action="{% url 'RestAPI:addGalleryComment' gallery.id %}">
+						<div class="input-group w-100">
+							<input type="text" name="comment" class="form-control" style="resize: none" aria-label="Add a comment…" placeholder="Add a comment…">
+							<div class="input-group-append">
+								<button class="btn btn-outline-dark input-group-text" type="submit">
+									<i class="far fa-comment"></i>
+								</button>
+							</div>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
