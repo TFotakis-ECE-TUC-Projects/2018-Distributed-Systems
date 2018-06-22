@@ -1,4 +1,4 @@
-fimport json
+import json
 import requests
 from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
