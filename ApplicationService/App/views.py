@@ -42,6 +42,6 @@ def uploadPhoto(request):
 		response = requests.post(requestUrl, files={'photoFile': photoFile})
 		if response.ok:
 			hadOneSuccessfulTransfer = True
-			UUID = json.loads(response.content)['UUID']
+			UUID = json.loads(response.text)['UUID']
 			Photo.objects.create(UUID=UUID, StorageService=storageService['name'])
 	return JsonResponse({'UUID': UUID}) if hadOneSuccessfulTransfer else HttpResponseNotFound()

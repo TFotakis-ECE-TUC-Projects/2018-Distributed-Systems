@@ -1,4 +1,4 @@
-import json
+fimport json
 import requests
 from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
@@ -39,7 +39,7 @@ def loginView(request):
 			'redirectmethod': 'POST'
 		}
 		response = requests.post(url=url, data=context, headers=header, cookies=cookies)
-		userData = json.loads(json.loads(response.content)['token'])
+		userData = json.loads(json.loads(response.text)['token'])
 		sharedKey = ''
 		for authService in zk.authenticationServiceList:
 			if authService['name'] == userData['issuer']:
@@ -82,7 +82,7 @@ def registerView(request):
 		}
 		response = requests.post(url=url, data=context, headers=header, cookies=cookies)
 		if response.ok:
-			userData = json.loads(json.loads(response.content)['token'])
+			userData = json.loads(json.loads(response.text)['token'])
 			sharedKey = ''
 			for authService in zk.authenticationServiceList:
 				if authService['name'] == userData['issuer']:

@@ -30,7 +30,7 @@ class Photo(models.Model):
 		try:
 			requestUrl = zk.applicationService + 'getStorageService/' + self.UUID + '/'
 			response = requests.get(requestUrl)
-			content = json.loads(response.content)
+			content = json.loads(response.text)
 			try:
 				username = self.Gallery.Owner.username
 			except Exception:
@@ -63,7 +63,7 @@ class Profile(models.Model):
 		try:
 			requestUrl = zk.applicationService + 'getStorageService/' + self.PhotoUUID + '/'
 			response = requests.get(requestUrl)
-			content = json.loads(response.content)
+			content = json.loads(response.text)
 			return content['storageService'] + 'getImage/' + self.PhotoUUID + '/'
 		except Exception:
 			return ""

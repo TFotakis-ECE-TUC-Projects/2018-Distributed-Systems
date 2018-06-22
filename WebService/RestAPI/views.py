@@ -61,10 +61,10 @@ def uploadPhoto(request):
 	response = requests.post(requestUrl, files={'photoFile': photoFile})
 
 	if response.ok:
-		UUID = json.loads(response.content)['UUID']
+		UUID = json.loads(response.text)['UUID']
 		Photo.objects.create(Gallery_id=galleryId, UUID=UUID, Description=description, Location=location)
 		return redirect('App:gallery', id=galleryId)
-	return redirect('App:uploadPhoto', request.user.id)
+	return redirect('App:uploadPhoto')
 
 
 @login_required(login_url=LOGIN_URL, redirect_field_name='callback')
@@ -78,7 +78,7 @@ def uploadProfilePhoto(request):
 	response = requests.post(requestUrl, files={'photoFile': photoFile})
 
 	if response.ok:
-		UUID = json.loads(response.content)['UUID']
+		UUID = json.loads(response.text)['UUID']
 		photo = Photo.objects.create(Gallery_id=galleryId, UUID=UUID, Description=description, Location=location)
 		user = User.objects.get(id=request.user.id)
 		user.profile.ProfilePhoto = photo
