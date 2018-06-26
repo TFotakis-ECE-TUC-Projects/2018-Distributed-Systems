@@ -35,9 +35,10 @@
 			</div>
 			<div class="card-footer bg-white">
 				<div class="row align-items-center px-2">
-					<a class="text-dark mr-3" href="{% url 'RestAPI:likePhoto' photo.id %}">
+					<a class="text-dark mr-3" onclick="likePhoto({{ photo.id }})">
+						{#					<a class="text-dark mr-3" href="{% url 'RestAPI:likePhoto' photo.id %}">#}
 						<h4>
-							<i class="far fa-heart"></i>
+							<i id="heart{{ photo.id }}" class="far fa-heart"></i>
 							{# Todo: Change icon when pressed#}
 							{# <i class="fas fa-heart"></i>#}
 						</h4>
@@ -57,7 +58,7 @@
 				</div>
 				<div class="row px-2">
 					<a class="text-dark mr-2" href="#">
-						<strong>{{ photo.like_set.count }} likes</strong>
+						<strong id="likesCounter{{ photo.id }}">{{ photo.like_set.count }}</strong><strong> likes</strong>
 					</a>
 				</div>
 				<div class="row px-2">

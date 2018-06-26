@@ -3,9 +3,10 @@ import requests
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from django.http import JsonResponse, HttpResponseRedirect
+from django.http import JsonResponse, HttpResponseRedirect, HttpResponse
 from django.shortcuts import redirect
 
+from App import views as AppViews
 from App.models import Friendship, Photo, PhotoComment, Profile, Like, GalleryComment, Gallery
 from WebService import settings
 from WebService.cryptography import cr
@@ -24,9 +25,15 @@ def nodeStatusView(request, node):
 
 @login_required(login_url=LOGIN_URL, redirect_field_name='callback')
 def addComment(request, photoId):
-	PhotoComment.objects.create(User_id=request.user.id, Photo_id=photoId, Text=request.GET['comment'])
-	referer = request.META.get('HTTP_REFERER')
-	return HttpResponseRedirect(referer)
+	comment = PhotoComment.objects.create(User_id=request.user.id, Photo_id=photoId, Text=request.GET['comment'])
+	context = {
+		'id': comment.id,
+		'userId': comment.User_id,
+		'userFullName': comment.User.get_full_name(),
+		'photoId': comment.Photo_id,
+		'text': comment.Text
+	}
+	return JsonResponse(context)
 
 
 @login_required(login_url=LOGIN_URL, redirect_field_name='callback')
@@ -39,8 +46,7 @@ def addGalleryComment(request, galleryId):
 @login_required(login_url=LOGIN_URL, redirect_field_name='callback')
 def deleteComment(request, commentId):
 	PhotoComment.objects.get(id=commentId).delete()
-	referer = request.META.get('HTTP_REFERER')
-	return HttpResponseRedirect(referer)
+	return HttpResponse(status=200)
 
 
 @login_required(login_url=LOGIN_URL, redirect_field_name='callback')
@@ -158,12 +164,14 @@ def likePhoto(request, photoId):
 		Like.objects.get(User=user, Photo=photo).delete()
 	else:
 		Like.objects.create(User=user, Photo=photo)
-	referer = request.META.get('HTTP_REFERER')
-	return HttpResponseRedirect(referer)
+	# referer = request.META.get('HTTP_REFERER')
+	# return HttpResponseRedirect(referer)
+	return HttpResponse(status=200)
 
 
 @login_required(login_url=LOGIN_URL, redirect_field_name='callback')
-def deletePhoto(request, photoId):
+def deletePhoto(request):
+	photoId = request.GET.get('id')
 	Photo.objects.get(id=photoId).delete()
 	referer = request.META.get('HTTP_REFERER')
 	return HttpResponseRedirect(referer)
@@ -174,3 +182,43 @@ def deleteGallery(request, galleryId):
 	Gallery.objects.get(id=galleryId).delete()
 	referer = request.META.get('HTTP_REFERER')
 	return HttpResponseRedirect(referer)
+
+
+@login_required(login_url=LOGIN_URL, redirect_field_name='callback')
+def profile(request):
+	return AppViews.profileView(request, request.GET.get('id'))
+
+
+@login_required(login_url=LOGIN_URL, redirect_field_name='callback')
+def gallery(request):
+	return AppViews.galleryView(request, request.GET.get('id'))
+
+
+@login_required(login_url=LOGIN_URL, redirect_field_name='callback')
+def homeFeed(request):
+	latestDateTime = request.GET.get('latestDateTime')
+	friends = Friendship.objects.filter(Friend_id=request.user.id).all().values_list('User', flat=True)
+	photo = Photo.objects.filter(Gallery__Owner__in=friends, UploadDateTime__lte=latestDateTime).first()
+	photoData = {
+		'id': photo.id,
+		'uuid': photo.UUID,
+		'profilePhotoUrl': photo.Gallery.Owner.profile.photoUrl,
+		'ownerId': photo.Gallery.Owner_id,
+		'ownerFullName': photo.Gallery.Owner.get_full_name(),
+		'location': photo.Location,
+		'galleryId': photo.Gallery_id,
+		'url': photo.url,
+		'likesCounter': photo.like_set.count(),
+		'description': photo.Description,
+		'uploadDateTime': str(photo.UploadDateTime),
+		'comments': [
+			{
+				'id': comment.id,
+				'userId': comment.User_id,
+				'userFullName': comment.User.get_full_name(),
+				'text': comment.Text
+			}
+			for comment in photo.photocomment_set.all()
+		],
+	}
+	return JsonResponse(photoData)

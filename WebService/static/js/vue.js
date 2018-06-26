@@ -11227,4 +11227,4 @@
 
 })));
 
-Vue.config.delimiters = ["[[", "]]"];
+Vue.options.delimiters = ["[[", "]]"];

@@ -1,0 +1,106 @@
+<div id="photoList">
+	<div v-for="photo in photoList">
+		<a :name="[[ photo.uuid ]]"></a>
+		<div class="navbar-placeholder"></div>
+		<div class="container align-content-center">
+			<div class="col-xl-6 col-lg-8 col-md-10 mx-auto">
+				<div class="card">
+					<div class="card-header bg-white">
+						<div class="row align-items-center px-2">
+							<a href="">
+								<img style="height: 36px; width: 36px; border-radius: 100%"
+								     :src="[[ photo.profilePhotoUrl ]]">
+							</a>
+							<div class="ml-2">
+								<a class="m-0 text-dark" :href="'{% url 'RestAPI:profile' %}?id='+[[ photo.ownerId ]]"><strong>[[ photo.ownerFullName ]]</strong></a>
+								<br>
+								<a class="text-dark" href="#">[[ photo.location ]]</a>
+							</div>
+							<div class="dropdown ml-auto">
+								<h6 class="m-0" data-toggle="dropdown">
+									<i class="fas fa-ellipsis-h"></i>
+								</h6>
+								<div class="dropdown-menu">
+									<a class="dropdown-item" :href="'{% url 'RestAPI:deletePhoto' %}?id='+[[ photo.id ]]">
+										Delete Image
+										<i class="far fa-trash-alt"></i>
+									</a>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="card-body p-0">
+						{#										<a href="{% url 'App:gallery' photo.galleryId %}#[[ photo.UUID ]]">#}
+						<a :href="'{% url 'RestAPI:gallery' %}?id=' + [[ photo.galleryId ]] + '#' + [[ photo.uuid ]]">
+							<img class="card-img" :src="[[ photo.url ]]" alt="">
+						</a>
+					</div>
+					<div class="card-footer bg-white">
+						<div class="row align-items-center px-2">
+							<a class="text-dark mr-3" @click="likePhoto(photo.id)">
+								<h4>
+									<i :id="'heart' + [[ photo.id ]]" class="far fa-heart"></i>
+									{# Todo: Check if already liked#}
+									{# <i class="fas fa-heart"></i>#}
+								</h4>
+							</a>
+							<a class="text-dark" href="#">
+								<h4>
+									<i class="far fa-comment"></i>
+								</h4>
+							</a>
+							<a class="ml-auto text-dark" href="#">
+								<h4>
+									<i class="far fa-bookmark"></i>
+									{# Todo: Change icon when pressed#}
+									{# <i class="fas fa-bookmark"></i>#}
+								</h4>
+							</a>
+						</div>
+						<div class="row px-2">
+							<a class="text-dark mr-2" href="#">
+								<strong :id="'likesCounter' + [[ photo.id ]]">[[ photo.likesCounter ]]</strong><strong> likes</strong>
+							</a>
+						</div>
+						<div v-if="photo.description" class="row px-2">
+							<a class="text-dark mr-1" :href="'{% url 'RestAPI:profile' %}?id=' + [[ photo.ownerId ]]"><strong>[[ photo.ownerFullName ]]</strong></a>
+							<span>[[ photo.description ]]</span>
+						</div>
+						{# <div class="row px-2">#}
+						{#      <a class="text-secondary mr-2" href="#">View all 22 comments</a>#}
+						{# </div>#}
+						<div class="row px-2">
+							<ul class="d-block p-0 m-0" style="list-style: none">
+								<li v-for="comment in photo.comments" :id="'comment' + [[ comment.id ]]">
+									<a class="text-dark mr-1" :href="'{% url 'RestAPI:profile' %}?id=' + [[ comment.userId ]]"><strong>[[ comment.userFullName ]]</strong></a>
+									<span>[[ comment.text ]]</span>
+									{#									<a class="text-dark" href='#'><i class="far fa-edit"></i></a>#}
+									<a class="text-dark" @click="deleteComment(comment.id)"><i class="far fa-trash-alt"></i></a>
+								</li>
+							</ul>
+						</div>
+						<div class="row px-2">
+							<a class="text-secondary mr-2" href="#">
+								<time :datetime="[[ photo.UploadDateTime ]]">[[ photo.uploadDateTime ]]</time>
+							</a>
+						</div>
+						<hr>
+						<div class="row px-2">
+							<form :id="'form' + [[ photo.id]] " class="form-inline w-100" action="#" @submit.prevent="addComment(photo.id)">
+								{# <form class="form-inline w-100" method="get" action="{% url 'RestAPI:addComment' photo.id %}">#}
+								<div class="input-group w-100">
+									<input :id="'photoTextInput' + [[ photo.id ]]" type="text" name="comment" class="form-control" style="resize: none" aria-label="Add a comment…" placeholder="Add a comment…">
+									<div class="input-group-append">
+										<button class="btn btn-outline-dark input-group-text" type="submit">
+											<i class="far fa-comment"></i>
+										</button>
+									</div>
+								</div>
+							</form>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

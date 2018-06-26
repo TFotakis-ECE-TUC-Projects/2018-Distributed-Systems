@@ -180,3 +180,9 @@ def createGallery(request):
 		userId = request.user.id
 		Gallery.objects.create(Owner_id=userId, Name=request.POST['name'])
 		return redirect('App:myProfile')
+
+
+@login_required(login_url=LOGIN_URL, redirect_field_name='callback')
+def dynamicHomeView(request):
+	context = {}
+	return render(request=request, template_name="App/dynamicHome.html", context=context)

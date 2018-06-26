@@ -15,6 +15,9 @@ urlpatterns = [
 	path('login', views.loginExternal, name='login'),
 	path('register', views.registerExternal, name='register'),
 	path('likePhoto/<int:photoId>/', views.likePhoto, name='likePhoto'),
-	path('deletePhoto/<int:photoId>/', views.deletePhoto, name='deletePhoto'),
+	path('deletePhoto', views.deletePhoto, name='deletePhoto'),
 	path('deleteGallery/<int:galleryId>/', views.deleteGallery, name='deleteGallery'),
+	path('profile', views.profile, name='profile'),
+	path('gallery', views.gallery, name='gallery'),
+	path('homeFeed', views.homeFeed, name='homeFeed'),
 ]
