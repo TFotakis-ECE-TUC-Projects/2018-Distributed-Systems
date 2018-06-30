@@ -23,7 +23,7 @@
 						{% for authService in authServices %}
 							<a
 									class="btn btn-outline-dark mb-2"
-									href="{{ authService.loginUrl }}{{ serverUrl }}{% url 'RestAPI:login' %}"
+									href="{{ authService.loginUrl }}{{ serverUrl }}{% url 'API:login' %}"
 									role="button"
 									aria-pressed="true"
 							>

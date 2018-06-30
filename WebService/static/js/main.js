@@ -1,4 +1,4 @@
-let lastDateTime = new Date().toISOString();
+let lastDateTime = "now";
 
 
 photoList = new Vue({
@@ -47,7 +47,8 @@ photoList = new Vue({
 							id: data.id,
 							userId: data.userId,
 							userFullName: data.userFullName,
-							text: data.text
+							text: data.text,
+							canDelete: true
 						};
 						photo.comments.push(comment);
 						document.getElementById("form" + data.photoId).reset();
@@ -64,32 +65,42 @@ function checkScrolling() {
 }
 
 
+let hasPhoto = true;
+let requestUrl = function () {
+	if (window.location.pathname === '/') {
+		return "/api/homeFeed?latestDateTime=" + lastDateTime;
+	} else {
+		let galleryId = window.location.pathname.split('/')[2];
+		return "/api/galleryFeed?galleryId=" + galleryId + "&latestDateTime=" + lastDateTime;
+	}
+};
+
 function addPhoto() {
 	$.ajax(
 		{
-			url: "/api/homeFeed?latestDateTime=" + lastDateTime,
+			url: requestUrl(),
 			success: function (data) {
+				if (!data) {
+					hasPhoto = false;
+					return;
+				}
 				lastDateTime = data.uploadDateTime;
 				photoList.photoList.push(data);
-				return true;
+				hasPhoto = true;
+				if (checkScrolling()) {
+					addPhoto()
+				}
+			},
+			error: function () {
+				hasPhoto = false;
 			}
 		}
 	);
 }
 
 
-function initialize() {
-	let hasPhoto = addPhoto();
-	if (checkScrolling() && hasPhoto) {
-		Vue.nextTick(function () {
-			initialize();
-		});
-	}
-}
-
-
 $(document).ready(function () {
-	initialize();
+	addPhoto();
 	let hasPhoto = true;
 	$(window).scroll(function () {
 		if (checkScrolling() && hasPhoto) {

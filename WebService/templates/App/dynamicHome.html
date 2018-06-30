@@ -2,5 +2,9 @@
 {% block title %}{% endblock %}
 {% block body %}
 	<div class="navbar-placeholder"></div>
-	{% include 'Shared/dynamicPhotoCard.html' %}
+	<div id="photoList">
+		<div v-for="photo in photoList">
+			{% include 'Shared/dynamicPhotoCard.html' %}
+		</div>
+	</div>
 {% endblock %}

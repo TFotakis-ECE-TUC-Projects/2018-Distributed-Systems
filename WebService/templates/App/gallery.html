@@ -23,7 +23,12 @@
 			</div>
 		</div>
 	</div>
-	{% for photo in gallery.photo_set.all|dictsortreversed:'UploadDateTime' %}
-		{% include 'Shared/photoCard.html' %}
-	{% endfor %}
+	{#	{% for photo in gallery.photo_set.all|dictsortreversed:'UploadDateTime' %}#}
+	{#		{% include 'Shared/photoCard.html' %}#}
+	{#	{% endfor %}#}
+	<div id="photoList">
+		<div v-for="photo in photoList">
+			{% include 'Shared/dynamicPhotoCard.html' %}
+		</div>
+	</div>
 {% endblock %}

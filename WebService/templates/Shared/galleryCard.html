@@ -15,7 +15,7 @@
 							<i class="fas fa-ellipsis-h"></i>
 						</h6>
 						<div class="dropdown-menu">
-							<a class="dropdown-item" href="{% url 'RestAPI:deleteGallery' gallery.id %}">
+							<a class="dropdown-item" href="{% url 'API:deleteGallery' gallery.id %}">
 								Delete Gallery
 								<i class="far fa-trash-alt"></i>
 							</a>
@@ -38,14 +38,14 @@
 								<a class="text-dark mr-1" href='{% url 'App:profile' comment.User.id %}'><strong>{{ comment.User.get_full_name }}</strong></a>
 								<span>{{ comment.Text }}</span>
 								{#								<a class="text-dark" href='#'><i class="far fa-edit"></i></a>#}
-								<a class="text-dark" href='{% url 'RestAPI:deleteComment' comment.id %}'><i class="far fa-trash-alt"></i></a>
+								<a class="text-dark" href='{% url 'API:deleteComment' comment.id %}'><i class="far fa-trash-alt"></i></a>
 							</li>
 						{% endfor %}
 					</ul>
 				</div>
 				<hr>
 				<div class="row px-2">
-					<form class="form-inline w-100" method="get" action="{% url 'RestAPI:addGalleryComment' gallery.id %}">
+					<form class="form-inline w-100" method="get" action="{% url 'API:addGalleryComment' gallery.id %}">
 						<div class="input-group w-100">
 							<input type="text" name="comment" class="form-control" style="resize: none" aria-label="Add a comment…" placeholder="Add a comment…">
 							<div class="input-group-append">

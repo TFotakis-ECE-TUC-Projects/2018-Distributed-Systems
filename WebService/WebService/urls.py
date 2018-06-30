@@ -6,6 +6,6 @@ from WebService.zoo import zk
 urlpatterns = [
 	path('admin/', admin.site.urls),
 	path('', include(('App.urls', 'App'), namespace='App')),
-	path('api/', include(('RestAPI.urls', 'RestAPI'), namespace='RestAPI')),
+	path('api/', include(('API.urls', 'API'), namespace='API')),
 ]
 zk.initialize()

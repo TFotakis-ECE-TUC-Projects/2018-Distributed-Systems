@@ -108,3 +108,5 @@ class PhotoComment(models.Model):
 class Like(models.Model):
 	User = models.ForeignKey(User, on_delete=models.CASCADE, default=1)
 	Photo = models.ForeignKey(Photo, on_delete=models.CASCADE, default=1)
+
+	def __str__(self): return str(User) + " - " + str(Photo)
