@@ -1,4 +1,5 @@
 import json
+import pytz
 import requests
 from datetime import datetime
 from django.contrib.auth import login
@@ -6,6 +7,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.http import JsonResponse, HttpResponseRedirect, HttpResponse
 from django.shortcuts import redirect
+from django.utils import timezone
 from django.utils.timezone import localtime
 
 from App import views as AppViews
@@ -231,7 +233,12 @@ def photoResponse(request, photo):
 def homeFeed(request):
 	latestDateTime = request.GET.get('latestDateTime')
 	if latestDateTime == 'now':
-		latestDateTime = datetime.now()
+		latestDateTime = timezone.now()
+	else:
+		local = pytz.timezone("Europe/Athens")
+		naive = datetime.strptime(latestDateTime, "%Y-%m-%d %H:%M:%S")
+		local_dt = local.localize(naive, is_dst=None)
+		latestDateTime = local_dt.astimezone(pytz.utc)
 	friends = Friendship.objects.filter(Friend_id=request.user.id).all().values_list('User', flat=True)
 	photo = Photo.objects.filter(Gallery__Owner__in=friends, UploadDateTime__lt=latestDateTime).order_by('-UploadDateTime').first()
 	return photoResponse(request, photo)
@@ -242,6 +249,11 @@ def galleryFeed(request):
 	latestDateTime = request.GET.get('latestDateTime')
 	galleryId = request.GET.get('galleryId')
 	if latestDateTime == 'now':
-		latestDateTime = datetime.now()
+		latestDateTime = timezone.now()
+	else:
+		local = pytz.timezone("Europe/Athens")
+		naive = datetime.strptime(latestDateTime, "%Y-%m-%d %H:%M:%S")
+		local_dt = local.localize(naive, is_dst=None)
+		latestDateTime = local_dt.astimezone(pytz.utc)
 	photo = Photo.objects.filter(Gallery_id=galleryId, UploadDateTime__lt=latestDateTime).order_by('-UploadDateTime').first()
 	return photoResponse(request, photo)

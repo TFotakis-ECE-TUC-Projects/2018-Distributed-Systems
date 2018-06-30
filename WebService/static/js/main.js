@@ -66,6 +66,8 @@ function checkScrolling() {
 
 
 let hasPhoto = true;
+let waiting = false;
+
 let requestUrl = function () {
 	if (window.location.pathname === '/') {
 		return "/api/homeFeed?latestDateTime=" + lastDateTime;
@@ -76,6 +78,7 @@ let requestUrl = function () {
 };
 
 function addPhoto() {
+	waiting = true;
 	$.ajax(
 		{
 			url: requestUrl(),
@@ -90,9 +93,11 @@ function addPhoto() {
 				if (checkScrolling()) {
 					addPhoto()
 				}
+				waiting = false;
 			},
 			error: function () {
 				hasPhoto = false;
+				waiting = false;
 			}
 		}
 	);
@@ -101,10 +106,9 @@ function addPhoto() {
 
 $(document).ready(function () {
 	addPhoto();
-	let hasPhoto = true;
 	$(window).scroll(function () {
-		if (checkScrolling() && hasPhoto) {
-			hasPhoto = addPhoto();
+		if (checkScrolling() && hasPhoto && !waiting) {
+			addPhoto();
 		}
 	});
 });
